@@ -1,20 +1,47 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+// 1. Import useLocation
+import { Link, useLocation } from "react-router-dom";
+import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, SlidersHorizontal, Star, X, Check } from "lucide-react";
+import { Search, SlidersHorizontal, Check } from "lucide-react";
 import Navbar from "../components/layout/TopNav";
 import Footer from "../components/layout/Footer";
-import ProductCard from "../components/cards/ProductCard"; // Use the smart card!
-import { PRODUCTS, CATEGORIES } from "../data/data";
+import ProductCard from "../components/cards/ProductCard";
 import styles from "./Equipment.module.css";
 
 const Equipment = () => {
-  const [activeCategory, setActiveCategory] = useState("All");
+  // 2. Get Location
+  const location = useLocation();
+
+  // 3. Initialize activeCategory with passed state OR "All"
+  const [activeCategory, setActiveCategory] = useState(location.state?.category || "All");
+
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [prodRes, catRes] = await Promise.all([
+          axios.get("http://localhost:5000/api/products"),
+          axios.get("http://localhost:5000/api/categories"),
+        ]);
+        setProducts(prodRes.data);
+        setCategories(catRes.data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error loading data:", err);
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   // Filter Logic
-  const filteredProducts = PRODUCTS.filter((product) => {
+  const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = activeCategory === "All" || product.category === activeCategory;
     return matchesSearch && matchesCategory;
@@ -23,25 +50,31 @@ const Equipment = () => {
   // Grouping Logic
   const groupedProducts = {};
   if (activeCategory === "All" && !searchTerm) {
-    CATEGORIES.forEach((cat) => {
-      groupedProducts[cat.name] = PRODUCTS.filter((p) => p.category === cat.name);
+    categories.forEach((cat) => {
+      groupedProducts[cat.name] = products.filter((p) => p.category === cat.name);
     });
   } else {
     groupedProducts["Results"] = filteredProducts;
+  }
+
+  if (loading) {
+    return (
+      <div className="container" style={{ paddingTop: "100px" }}>
+        Loading inventory...
+      </div>
+    );
   }
 
   return (
     <div className={styles.wrapper}>
       <Navbar />
 
-      {/* UNIFIED SEARCH & FILTER BAR */}
       <div className={styles.topBar}>
         <div className={`container ${styles.barContainer}`}>
           <div className={styles.searchGroup}>
             <Search className={styles.searchIcon} size={20} />
             <input type="text" placeholder="Search speakers, mixers, lights..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
 
-            {/* The Filter Trigger */}
             <div className={styles.divider}></div>
             <button className={`${styles.filterBtn} ${isFilterOpen ? styles.activeFilter : ""}`} onClick={() => setIsFilterOpen(!isFilterOpen)}>
               <SlidersHorizontal size={18} />
@@ -50,7 +83,6 @@ const Equipment = () => {
             </button>
           </div>
 
-          {/* FILTER DROPDOWN */}
           <AnimatePresence>
             {isFilterOpen && (
               <motion.div className={styles.filterMenu} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}>
@@ -62,9 +94,9 @@ const Equipment = () => {
                 </div>
 
                 <div className={styles.categoryList}>
-                  {CATEGORIES.map((cat) => (
+                  {categories.map((cat) => (
                     <button
-                      key={cat.id}
+                      key={cat._id}
                       className={`${styles.catOption} ${activeCategory === cat.name ? styles.selected : ""}`}
                       onClick={() => {
                         setActiveCategory(cat.name);
@@ -82,7 +114,6 @@ const Equipment = () => {
         </div>
       </div>
 
-      {/* CONTENT GRID */}
       <div className={`container ${styles.mainContent}`}>
         {Object.entries(groupedProducts).map(
           ([category, items]) =>
@@ -94,28 +125,13 @@ const Equipment = () => {
 
                 <div className={styles.grid}>
                   {items.map((product) => (
-                    <Link to={`/product/${product.id}`} key={product.id} className={styles.cardLink}>
+                    <Link to={`/product/${product._id}`} key={product._id} className={styles.cardLink}>
                       <ProductCard product={product} />
                     </Link>
                   ))}
                 </div>
               </section>
             )
-        )}
-
-        {filteredProducts.length === 0 && (
-          <div className={styles.noResults}>
-            <h3>No gear found</h3>
-            <p>Try adjusting your search filters.</p>
-            <button
-              onClick={() => {
-                setSearchTerm("");
-                setActiveCategory("All");
-              }}
-            >
-              Clear All Filters
-            </button>
-          </div>
         )}
       </div>
 

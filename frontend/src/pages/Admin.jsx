@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutDashboard, Package, Tag, Plus, Pencil, Trash2, X, Check, Search, Upload } from "lucide-react";
+import { Package, Tag, Plus, Pencil, Trash2, X, Check, Search, Upload } from "lucide-react";
 import Navbar from "../components/layout/TopNav";
 import { useInventory } from "../context/InventoryContext";
 import styles from "./Admin.module.css";
 
 const Admin = () => {
-  const { products, categories, deleteProduct, addProduct, updateProduct, deleteCategory, addCategory } = useInventory();
+  const { products, categories, deleteProduct, addProduct, updateProduct, deleteCategory, addCategory, updateCategory } = useInventory();
 
   const [activeTab, setActiveTab] = useState("products");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,39 +14,88 @@ const Admin = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Form State
-  const [formData, setFormData] = useState({
-    name: "",
-    price: "",
-    category: "",
-    image: "",
-    tag: "",
-    description: "",
-  });
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
 
-  // Filter Logic
+  // Filter Products
   const filteredProducts = products.filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
+  // Open Modal (Reset or Populate)
   const openModal = (item = null) => {
     setEditingItem(item);
+
+    // 1. Reset Form
+    setName("");
+    setPrice("");
+    setDescription("");
+    setImagePreview("");
+    setImageFile(null);
+    setCategory(categories[0]?.name || "Speakers");
+
+    // 2. Populate if Editing
     if (item) {
-      setFormData(item);
-    } else {
-      setFormData({ name: "", price: "", category: categories[0]?.name || "", image: "", tag: "", description: "" });
+      setName(item.name);
+      setDescription(item.description || "");
+
+      // Handle Image Preview (Check if it's a URL or relative path)
+      if (item.image) {
+        const imgUrl = item.image.startsWith("http") ? item.image : `http://localhost:5000${item.image}`;
+        setImagePreview(imgUrl);
+      }
+
+      // Product-specific fields
+      if (activeTab === "products") {
+        setPrice(item.pricePerDay || item.price);
+        setCategory(item.category);
+      }
     }
     setIsModalOpen(true);
   };
 
-  const handleSubmit = (e) => {
+  // Handle File Selection
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file)); // Local preview
+    }
+  };
+
+  // Submit Form (Handles both Products and Categories)
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Create FormData (Required for File Uploads)
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
+
+    // Only append image if a NEW file was selected
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
+
     if (activeTab === "products") {
+      // Product Specific Data
+      formData.append("pricePerDay", price);
+      formData.append("category", category);
+
       if (editingItem) {
-        updateProduct(editingItem.id, formData);
+        await updateProduct(editingItem._id, formData);
       } else {
-        addProduct({ ...formData, price: Number(formData.price) });
+        await addProduct(formData);
       }
     } else {
-      // Category Logic (Simplified for demo)
-      addCategory({ name: formData.name, desc: formData.description });
+      // Category Specific Data
+      if (editingItem) {
+        await updateCategory(editingItem._id, formData);
+      } else {
+        await addCategory(formData);
+      }
     }
     setIsModalOpen(false);
   };
@@ -82,7 +131,8 @@ const Admin = () => {
             </button>
           </div>
 
-          {activeTab === "products" && (
+          {activeTab === "products" ? (
+            /* PRODUCT TAB */
             <>
               <div className={styles.toolbar}>
                 <div className={styles.searchBox}>
@@ -101,34 +151,33 @@ const Admin = () => {
                       <th>Item</th>
                       <th>Category</th>
                       <th>Price</th>
-                      <th>Status</th>
-                      <th style={{ textAlign: "right" }}>Actions</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredProducts.map((product) => (
-                      <tr key={product.id}>
+                      <tr key={product._id || product.id}>
                         <td>
                           <div className={styles.productCell}>
-                            <img src={product.image} alt="" className={styles.thumb} />
+                            <img
+                              src={product.image && product.image.startsWith("http") ? product.image : `http://localhost:5000${product.image}`}
+                              alt=""
+                              className={styles.thumb}
+                            />
                             <div>
                               <strong>{product.name}</strong>
-                              <span className={styles.id}>#{product.id}</span>
                             </div>
                           </div>
                         </td>
                         <td>
                           <span className={styles.catBadge}>{product.category}</span>
                         </td>
-                        <td>${product.price}/day</td>
+                        <td>${product.pricePerDay || product.price}/day</td>
                         <td>
-                          <span className={styles.statusBadge}>Active</span>
-                        </td>
-                        <td style={{ textAlign: "right" }}>
                           <button className={styles.actionBtn} onClick={() => openModal(product)}>
                             <Pencil size={16} />
                           </button>
-                          <button className={styles.deleteBtn} onClick={() => deleteProduct(product.id)}>
+                          <button className={styles.deleteBtn} onClick={() => deleteProduct(product._id)}>
                             <Trash2 size={16} />
                           </button>
                         </td>
@@ -138,19 +187,28 @@ const Admin = () => {
                 </table>
               </div>
             </>
-          )}
-
-          {activeTab === "categories" && (
+          ) : (
+            /* CATEGORY TAB */
             <div className={styles.grid}>
               {categories.map((cat) => (
-                <div key={cat.id} className={styles.catCard}>
+                <div key={cat._id} className={styles.catCard}>
+                  <img
+                    src={cat.image && cat.image.startsWith("http") ? cat.image : `http://localhost:5000${cat.image}`}
+                    alt={cat.name}
+                    style={{ width: "100%", height: "120px", objectFit: "cover", borderRadius: "4px 4px 0 0", marginBottom: "10px" }}
+                  />
                   <div className={styles.catHeader}>
                     <h3>{cat.name}</h3>
-                    <button onClick={() => deleteCategory(cat.id)} className={styles.deleteBtn}>
-                      <Trash2 size={16} />
-                    </button>
+                    <div style={{ display: "flex", gap: "5px" }}>
+                      <button onClick={() => openModal(cat)} className={styles.actionBtn}>
+                        <Pencil size={16} />
+                      </button>
+                      <button onClick={() => deleteCategory(cat._id)} className={styles.deleteBtn}>
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
-                  <p>{cat.desc || "No description provided"}</p>
+                  <p>{cat.description}</p>
                   <span className={styles.countBadge}>{products.filter((p) => p.category === cat.name).length} Products</span>
                 </div>
               ))}
@@ -165,62 +223,83 @@ const Admin = () => {
           <motion.div className={styles.modalOverlay} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <motion.div className={styles.modal} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
               <div className={styles.modalHeader}>
-                <h2>{editingItem ? "Edit Product" : "Add New Product"}</h2>
+                <h2>
+                  {editingItem ? "Edit" : "Add"} {activeTab === "products" ? "Product" : "Category"}
+                </h2>
                 <button onClick={() => setIsModalOpen(false)}>
                   <X size={24} />
                 </button>
               </div>
 
               <form onSubmit={handleSubmit} className={styles.form}>
+                {/* 1. SHARED FIELDS */}
                 <div className={styles.row}>
                   <div className={styles.group}>
                     <label>Name</label>
-                    <input required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
-                  </div>
-                  <div className={styles.group}>
-                    <label>Price (Daily)</label>
-                    <input type="number" required value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} />
+                    <input required value={name} onChange={(e) => setName(e.target.value)} />
                   </div>
                 </div>
 
-                <div className={styles.row}>
-                  <div className={styles.group}>
-                    <label>Category</label>
-                    <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
-                      {categories.map((c) => (
-                        <option key={c.id} value={c.name}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
+                {/* 2. PRODUCT ONLY FIELDS */}
+                {activeTab === "products" && (
+                  <div className={styles.row}>
+                    <div className={styles.group}>
+                      <label>Price (Daily)</label>
+                      <input type="number" required value={price} onChange={(e) => setPrice(e.target.value)} />
+                    </div>
+                    <div className={styles.group}>
+                      <label>Category</label>
+                      <select value={category} onChange={(e) => setCategory(e.target.value)}>
+                        {categories.map((c) => (
+                          <option key={c._id} value={c.name}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
-                  <div className={styles.group}>
-                    <label>Tag (Optional)</label>
-                    <input value={formData.tag} onChange={(e) => setFormData({ ...formData, tag: e.target.value })} />
-                  </div>
-                </div>
+                )}
 
+                {/* 3. IMAGE UPLOAD (SHARED) */}
                 <div className={styles.group}>
-                  <label>Image URL</label>
+                  <label>{activeTab === "products" ? "Product Image" : "Category Cover Image"}</label>
+
                   <div className={styles.urlInput}>
-                    <input value={formData.image} onChange={(e) => setFormData({ ...formData, image: e.target.value })} placeholder="https://..." />
-                    <button type="button" className={styles.uploadBtn}>
+                    {/* Hidden Input */}
+                    <input type="file" id="fileInput" accept="image/*" onChange={handleImageChange} style={{ display: "none" }} />
+
+                    {/* Custom Button */}
+                    <button
+                      type="button"
+                      className={styles.uploadBtn}
+                      onClick={() => document.getElementById("fileInput").click()}
+                      style={{ width: "100%", display: "flex", justifyContent: "center", gap: "8px" }}
+                    >
                       <Upload size={16} />
+                      {imageFile ? "Change Image" : "Upload Image"}
                     </button>
                   </div>
+
+                  {/* Preview */}
+                  {imagePreview && (
+                    <div style={{ marginTop: "10px" }}>
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        style={{ width: "100%", height: "150px", objectFit: "cover", borderRadius: "8px", border: "1px solid #eee" }}
+                      />
+                    </div>
+                  )}
                 </div>
 
+                {/* 4. DESCRIPTION (SHARED) */}
                 <div className={styles.group}>
                   <label>Description</label>
-                  <textarea
-                    rows="3"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  ></textarea>
+                  <textarea rows="3" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
                 </div>
 
                 <button type="submit" className={styles.submitBtn}>
-                  <Check size={18} /> Save Changes
+                  <Check size={18} /> {editingItem ? "Update" : "Save"}
                 </button>
               </form>
             </motion.div>

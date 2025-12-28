@@ -1,38 +1,66 @@
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Star, Zap, Activity, Users } from "lucide-react";
+import axios from "axios";
+// 1. Import Link and useNavigate
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowRight, Activity, Users, Zap, Speaker, Mic2, Music, Radio } from "lucide-react";
 import Navbar from "../components/layout/TopNav";
 import Footer from "../components/layout/Footer";
 import ProductCard from "../components/cards/ProductCard";
-import { CATEGORIES, CASES, TESTIMONIALS } from "../data/data";
+import { CASES, TESTIMONIALS } from "../data/data";
 import styles from "./Home.module.css";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
 };
 
+const CATEGORY_ICONS = {
+  Speakers: Speaker,
+  Microphones: Mic2,
+  "DJ Gear": Music,
+  Lighting: Zap,
+  Default: Radio,
+};
+
 const Home = () => {
-  // Replace the hardcoded PRODUCTS with state
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+
+  // 2. Initialize Navigation Hook
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/products");
-        setProducts(res.data); // Use the real data from DB
+        const [prodRes, catRes] = await Promise.all([
+          axios.get("http://localhost:5000/api/products"),
+          axios.get("http://localhost:5000/api/categories"),
+        ]);
+        setProducts(prodRes.data);
+        setCategories(catRes.data);
       } catch (err) {
-        console.error("Error fetching products:", err);
+        console.error("Error fetching data:", err);
       }
     };
-    fetchProducts();
+    fetchData();
   }, []);
+
+  const getIcon = (name) => {
+    return CATEGORY_ICONS[name] || CATEGORY_ICONS["Default"];
+  };
+
+  // 3. Handle Category Click
+  const handleCategoryClick = (categoryName) => {
+    // Navigate to /equipment and pass the category name in the 'state' object
+    navigate("/equipment", { state: { category: categoryName } });
+  };
+
   return (
     <div className={styles.wrapper}>
       <Navbar />
 
-      {/* 1. CINEMATIC HERO */}
+      {/* HERO SECTION */}
       <section className={styles.hero}>
         <div className={styles.heroGlow} />
         <div className={`container ${styles.heroContainer}`}>
@@ -45,14 +73,18 @@ const Home = () => {
               We provide the technology that makes your event impactful. From intimate gatherings to stadium-sized experiences.
             </p>
             <div className={styles.heroActions}>
-              <button className={styles.primaryBtn}>Explore Solutions</button>
-              <button className={styles.secondaryBtn}>View Catalog</button>
+              <Link to="/equipment">
+                <button className={styles.primaryBtn}>Explore Solutions</button>
+              </Link>
+              <Link to="/equipment">
+                <button className={styles.secondaryBtn}>View Catalog</button>
+              </Link>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* 2. STATS / TRUST (The "About" Hook) */}
+      {/* STATS SECTION */}
       <section className={styles.statsSection}>
         <div className={`container ${styles.statsGrid}`}>
           <div className={styles.statItem}>
@@ -73,34 +105,44 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 3. SOLUTIONS (Categories with Images) */}
+      {/* SOLUTIONS SECTION */}
       <section className={styles.section}>
         <div className="container">
           <div className={styles.header}>
             <h2>Our Solutions</h2>
-            <a href="#" className={styles.link}>
+            <Link to="/equipment" className={styles.link}>
               See All Services <ArrowRight size={16} />
-            </a>
+            </Link>
           </div>
           <div className={styles.solutionGrid}>
-            {CATEGORIES.map((cat) => (
-              <motion.div key={cat.id} className={styles.solutionCard} whileHover={{ y: -5 }}>
-                <div className={styles.solutionImage}>
-                  <img src={cat.image} alt={cat.name} />
-                  <div className={styles.solutionOverlay} />
-                  <cat.icon className={styles.solutionIcon} size={32} />
-                </div>
-                <div className={styles.solutionContent}>
-                  <h3>{cat.name}</h3>
-                  <p>{cat.desc}</p>
-                </div>
-              </motion.div>
-            ))}
+            {categories.map((cat) => {
+              const IconComponent = getIcon(cat.name);
+              return (
+                <motion.div
+                  key={cat._id}
+                  className={styles.solutionCard}
+                  whileHover={{ y: -5 }}
+                  // 4. Attach Click Handler
+                  onClick={() => handleCategoryClick(cat.name)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className={styles.solutionImage}>
+                    <img src={cat.image && cat.image.startsWith("http") ? cat.image : `http://localhost:5000${cat.image}`} alt={cat.name} />
+                    <div className={styles.solutionOverlay} />
+                    <IconComponent className={styles.solutionIcon} size={32} />
+                  </div>
+                  <div className={styles.solutionContent}>
+                    <h3>{cat.name}</h3>
+                    <p>{cat.description}</p>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* 4. CASES (Portfolio) */}
+      {/* CASES SECTION */}
       <section className={styles.section}>
         <div className="container">
           <div className={styles.header}>
@@ -120,40 +162,21 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 5. TESTIMONIALS */}
-      {/* <section className={styles.testimonialSection}>
-        <div className="container">
-          <h2 className={styles.centerTitle}>Trusted by the best.</h2>
-          <div className={styles.testiGrid}>
-            {TESTIMONIALS.map((t) => (
-              <div key={t.id} className={styles.testiCard}>
-                <div className={styles.stars}>
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} size={14} fill="#3b82f6" stroke="none" />
-                  ))}
-                </div>
-                <p>"{t.text}"</p>
-                <div className={styles.testiAuthor}>
-                  <strong>{t.author}</strong> — <span>{t.role}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section> */}
-
-      {/* 6. TRENDING PRODUCTS */}
+      {/* TRENDING SECTION */}
       <section className={styles.section}>
         <div className="container">
           <div className={styles.header}>
             <h2>Trending</h2>
-            <a href="/Equipment" className={styles.link}>
+            <Link to="/equipment" className={styles.link}>
               View Full Catalog <ArrowRight size={16} />
-            </a>
+            </Link>
           </div>
           <div className={styles.productGrid}>
-            {products.map((prod) => (
-              <ProductCard key={prod.id} product={prod} />
+            {products.slice(0, 4).map((prod) => (
+              // 5. Wrap ProductCard in Link
+              <Link to={`/product/${prod._id}`} key={prod._id} style={{ textDecoration: "none" }}>
+                <ProductCard product={prod} />
+              </Link>
             ))}
           </div>
         </div>

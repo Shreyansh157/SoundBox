@@ -1,50 +1,95 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { PRODUCTS as INITIAL_PRODUCTS, CATEGORIES as INITIAL_CATEGORIES } from "../data/data";
+import axios from "axios";
 
 const InventoryContext = createContext();
 
 export const InventoryProvider = ({ children }) => {
-  // 1. Initialize State (Load from LocalStorage or use Data.js defaults)
-  const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem("sb_products");
-    return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
-  });
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]); // Empty initially
 
-  const [categories, setCategories] = useState(() => {
-    const saved = localStorage.getItem("sb_categories");
-    return saved ? JSON.parse(saved) : INITIAL_CATEGORIES;
-  });
-
-  // 2. Sync to LocalStorage
   useEffect(() => {
-    localStorage.setItem("sb_products", JSON.stringify(products));
-    localStorage.setItem("sb_categories", JSON.stringify(categories));
-  }, [products, categories]);
+    fetchData();
+  }, []);
 
-  // --- CRUD OPERATIONS ---
-
-  // Products
-  const addProduct = (product) => {
-    const newProduct = { ...product, id: Date.now() }; // Generate ID
-    setProducts([...products, newProduct]);
+  const fetchData = async () => {
+    try {
+      const [prodRes, catRes] = await Promise.all([
+        axios.get("http://localhost:5000/api/products"),
+        axios.get("http://localhost:5000/api/categories"),
+      ]);
+      setProducts(prodRes.data);
+      setCategories(catRes.data);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+    }
   };
 
-  const updateProduct = (id, updatedData) => {
-    setProducts(products.map((p) => (p.id === id ? { ...p, ...updatedData } : p)));
+  // --- PRODUCT ACTIONS ---
+  const addProduct = async (formData) => {
+    try {
+      const res = await axios.post("http://localhost:5000/api/products", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setProducts((prev) => [...prev, res.data]);
+    } catch (err) {
+      console.error("Error adding product:", err);
+    }
   };
 
-  const deleteProduct = (id) => {
-    setProducts(products.filter((p) => p.id !== id));
+  const updateProduct = async (id, formData) => {
+    try {
+      const res = await axios.put(`http://localhost:5000/api/products/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setProducts((prev) => prev.map((p) => (p._id === id ? res.data : p)));
+    } catch (err) {
+      console.error("Error updating product:", err);
+    }
   };
 
-  // Categories
-  const addCategory = (category) => {
-    const newCategory = { ...category, id: Date.now() };
-    setCategories([...categories, newCategory]);
+  const deleteProduct = async (id) => {
+    if (!window.confirm("Delete this product?")) return;
+    try {
+      await axios.delete(`http://localhost:5000/api/products/${id}`);
+      setProducts((prev) => prev.filter((p) => p._id !== id));
+    } catch (err) {
+      console.error("Error deleting product:", err);
+    }
   };
 
-  const deleteCategory = (id) => {
-    setCategories(categories.filter((c) => c.id !== id));
+  // --- CATEGORY ACTIONS ---
+  const addCategory = async (formData) => {
+    try {
+      // Changed to send FormData with correct headers
+      const res = await axios.post("http://localhost:5000/api/categories", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setCategories([...categories, res.data]);
+    } catch (err) {
+      console.error("Error adding category:", err);
+    }
+  };
+
+  const updateCategory = async (id, formData) => {
+    try {
+      // Changed to send FormData
+      const res = await axios.put(`http://localhost:5000/api/categories/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      setCategories((prev) => prev.map((c) => (c._id === id ? res.data : c)));
+    } catch (err) {
+      console.error("Error updating category:", err);
+    }
+  };
+
+  const deleteCategory = async (id) => {
+    if (!window.confirm("Delete this category?")) return;
+    try {
+      await axios.delete(`http://localhost:5000/api/categories/${id}`);
+      setCategories((prev) => prev.filter((c) => c._id !== id));
+    } catch (err) {
+      console.error("Error deleting category:", err);
+    }
   };
 
   return (
@@ -56,6 +101,7 @@ export const InventoryProvider = ({ children }) => {
         updateProduct,
         deleteProduct,
         addCategory,
+        updateCategory,
         deleteCategory,
       }}
     >

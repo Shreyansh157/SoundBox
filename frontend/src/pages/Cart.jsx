@@ -1,16 +1,20 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trash2, ArrowRight, ShoppingBag, CreditCard, Lock, Calendar, Clock } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Trash2, ArrowRight, ShoppingBag, Lock, Calendar, Clock, Loader2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Navbar from "../components/layout/TopNav";
 import Footer from "../components/layout/Footer";
 import { useCart } from "../context/CartContext";
 import styles from "./Cart.module.css";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const navigate = useNavigate();
+  const { cart, removeFromCart } = useCart();
+
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // <--- NEW STATE
+
   const [formData, setFormData] = useState({
     customerName: "",
     email: "",
@@ -25,41 +29,43 @@ const Cart = () => {
 
   const handleSubmitOrder = async (e) => {
     e.preventDefault();
+
+    // Prevent double submission
+    if (isSubmitting) return;
+
+    setIsSubmitting(true); // <--- DISABLE BUTTON
+
     try {
       const orderData = {
         ...formData,
         items: cart.map((item) => ({
-          productId: item._id || item.id, // Handle both MongoDB _id and static id
+          productId: item._id || item.id,
           productName: item.name,
           quantity: item.quantity,
         })),
       };
 
-      // Send to Backend
       await axios.post("http://localhost:5000/api/orders", orderData);
 
-      // Clear cart and redirect
+      // Clear Cart & Redirect
       localStorage.removeItem("soundbox_cart");
-      // You might need to add a clearCart() function to your Context
-      alert("Request Sent! We will call you shortly.");
-      window.location.href = "/"; // Force reload to clear state or use navigate('/')
+      alert("Request Sent Successfully! Check your inbox.");
+      window.location.href = "/";
     } catch (err) {
       console.error("Order Error:", err);
-      alert("Failed to send request. Check console.");
+      alert("Failed to send request. Make sure all fields are filled.");
+      setIsSubmitting(false); // <--- RE-ENABLE BUTTON IF ERROR
     }
   };
 
-  const { cart, removeFromCart } = useCart();
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-
-  // --- FIXED CALCULATIONS ---
-  // Now includes (item.days || 1) in the math
+  // --- CALCULATIONS ---
   const subtotal = cart.reduce((total, item) => {
     const duration = item.days || 1;
-    return total + item.price * item.quantity * duration;
+    const price = item.pricePerDay || item.price || 0;
+    return total + price * item.quantity * duration;
   }, 0);
 
-  const taxRate = 0.08875; // NYC Sales Tax
+  const taxRate = 0.08875;
   const taxAmount = subtotal * taxRate;
   const total = subtotal + taxAmount;
 
@@ -99,16 +105,15 @@ const Cart = () => {
             <AnimatePresence>
               {cart.map((item) => (
                 <motion.div
-                  key={item.id}
+                  key={item._id || item.id}
                   layout
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   className={styles.cartItem}
                 >
-                  {/* Product Info */}
                   <div className={styles.itemInfo}>
-                    <img src={item.image} alt={item.name} />
+                    <img src={item.image && item.image.startsWith("http") ? item.image : `http://localhost:5000${item.image}`} alt={item.name} />
                     <div>
                       <h3>{item.name}</h3>
                       <div className={styles.metaRow}>
@@ -121,15 +126,13 @@ const Cart = () => {
                     </div>
                   </div>
 
-                  {/* Rate & Duration Display */}
                   <div className={styles.rateColumn}>
-                    <div className={styles.basePrice}>${item.price} / day</div>
+                    <div className={styles.basePrice}>${item.pricePerDay || item.price} / day</div>
                     <div className={styles.durationBadge}>
                       <Clock size={12} /> {item.days || 1} Days
                     </div>
                   </div>
 
-                  {/* Quantity */}
                   <div className={styles.quantityControl}>
                     <button onClick={() => removeFromCart(item.id)} className={styles.removeBtn} title="Remove">
                       <Trash2 size={16} />
@@ -137,8 +140,7 @@ const Cart = () => {
                     <span className={styles.qtyDisplay}>{item.quantity}</span>
                   </div>
 
-                  {/* Item Total (Price * Days * Qty) */}
-                  <div className={styles.itemTotal}>${(item.price * item.quantity * (item.days || 1)).toFixed(2)}</div>
+                  <div className={styles.itemTotal}>${((item.pricePerDay || item.price) * item.quantity * (item.days || 1)).toFixed(2)}</div>
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -179,26 +181,70 @@ const Cart = () => {
 
                   <div className={styles.inputGroup}>
                     <label>Full Name</label>
-                    <input name="customerName" required onChange={handleInputChange} type="text" placeholder="John Doe" />
+                    <input
+                      name="customerName"
+                      value={formData.customerName}
+                      required
+                      onChange={handleInputChange}
+                      type="text"
+                      placeholder="John Doe"
+                    />
                   </div>
 
                   <div className={styles.inputGroup}>
-                    <label>Phone Number (Required)</label>
-                    <input name="phone" required onChange={handleInputChange} type="tel" placeholder="98765 43210" />
+                    <label>Phone Number</label>
+                    <input name="phone" value={formData.phone} required onChange={handleInputChange} type="tel" placeholder="98765 43210" />
                   </div>
 
                   <div className={styles.inputGroup}>
                     <label>Email Address</label>
-                    <input name="email" required onChange={handleInputChange} type="email" placeholder="john@example.com" />
+                    <input name="email" value={formData.email} required onChange={handleInputChange} type="email" placeholder="john@example.com" />
+                  </div>
+
+                  <div className={styles.inputGroup}>
+                    <label>Event Date</label>
+                    <input
+                      name="eventDate"
+                      value={formData.eventDate}
+                      required
+                      onChange={handleInputChange}
+                      type="date"
+                      style={{ colorScheme: "dark" }}
+                    />
                   </div>
 
                   <div className={styles.inputGroup}>
                     <label>Delivery Address</label>
-                    <textarea name="address" required onChange={handleInputChange} placeholder="Full address..." rows="3"></textarea>
+                    <textarea
+                      name="address"
+                      value={formData.address}
+                      required
+                      onChange={handleInputChange}
+                      placeholder="Full address..."
+                      rows="3"
+                    ></textarea>
                   </div>
 
-                  <button type="submit" className={styles.payBtn}>
-                    <ArrowRight size={16} /> Submit Request
+                  {/* --- UPDATED BUTTON --- */}
+                  <button
+                    type="submit"
+                    className={styles.payBtn}
+                    disabled={isSubmitting} // Logic to disable
+                    style={{
+                      opacity: isSubmitting ? 0.7 : 1,
+                      cursor: isSubmitting ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 size={18} className="spin-icon" style={{ animation: "spin 1s linear infinite" }} />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <ArrowRight size={16} /> Submit Request
+                      </>
+                    )}
                   </button>
                 </motion.form>
               )}
@@ -210,6 +256,11 @@ const Cart = () => {
           </div>
         </div>
       </div>
+
+      {/* Add simple keyframe for spinner if not present globally */}
+      <style>{`
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      `}</style>
 
       <Footer />
     </div>

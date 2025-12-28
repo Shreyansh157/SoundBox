@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Star, ShieldCheck, Truck, ShoppingBag, Check, Calendar, Clock } from "lucide-react";
+import axios from "axios";
 import Navbar from "../components/layout/TopNav";
 import Footer from "../components/layout/Footer";
-import { PRODUCTS } from "../data/data";
 import { useCart } from "../context/CartContext";
 import styles from "./ProductDetail.module.css";
 
@@ -12,31 +12,61 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-  // 1. New State for Rental Options
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Rental State
   const [startDate, setStartDate] = useState("");
   const [days, setDays] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
 
-  const product = PRODUCTS.find((p) => p.id === parseInt(id));
+  // Fetch product from Backend
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        // Fetch specific product using the ID from URL
+        const res = await axios.get(`http://localhost:5000/api/products/${id}`);
+        setProduct(res.data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching product:", err);
+        setError("Could not load product details.");
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [id]);
 
-  if (!product) return null;
+  if (loading)
+    return (
+      <div className="container" style={{ marginTop: "100px" }}>
+        Loading...
+      </div>
+    );
+  if (error || !product)
+    return (
+      <div className="container" style={{ marginTop: "100px" }}>
+        Product not found
+      </div>
+    );
 
-  // 2. Calculate Dynamic Price
-  const totalPrice = product.price * days;
+  // Handle price naming difference (DB uses pricePerDay, Frontend used price)
+  const currentPrice = product.pricePerDay || product.price;
+  const totalPrice = currentPrice * days;
 
   const handleAddToCart = () => {
-    // Basic Validation
     if (!startDate) {
       alert("Please select a start date for your rental.");
       return;
     }
 
-    // 3. Pass the extra data (startDate, days, total) to Cart
     addToCart({
       ...product,
+      id: product._id, // Ensure ID is consistent for Cart
       startDate,
       days,
-      price: product.price, // Base price per day
+      price: currentPrice,
     });
 
     setIsAdded(true);
@@ -56,7 +86,9 @@ const ProductDetail = () => {
           {/* IMAGES */}
           <div className={styles.gallery}>
             <div className={styles.mainImage}>
-              <img src={product.image} alt={product.name} />
+              {/* Ensure image path is correct. If it starts with /uploads, prepend server URL if needed, 
+                  or ensure your index.js serves /uploads statically */}
+              <img src={product.image.startsWith("http") ? product.image : `http://localhost:5000${product.image}`} alt={product.name} />
             </div>
           </div>
 
@@ -71,12 +103,13 @@ const ProductDetail = () => {
                     <Star key={i} size={16} fill="#fbbf24" stroke="none" />
                   ))}
                 </div>
-                <span>{product.rating}</span>
-                <span className={styles.reviews}>({product.reviews} reviews)</span>
+                {/* Fallback for rating if not in DB yet */}
+                <span>{product.rating || "5.0"}</span>
+                <span className={styles.reviews}>({product.reviews || 0} reviews)</span>
               </div>
             </div>
 
-            {/* --- NEW RENTAL CONFIGURATOR --- */}
+            {/* --- RENTAL CONFIGURATOR --- */}
             <div className={styles.configurator}>
               <div className={styles.configRow}>
                 <div className={styles.inputGroup}>
@@ -109,12 +142,11 @@ const ProductDetail = () => {
               {/* Price Calculation Display */}
               <div className={styles.priceSummary}>
                 <div className={styles.math}>
-                  <span>${product.price}</span> x <span>{days} days</span>
+                  <span>${currentPrice}</span> x <span>{days} days</span>
                 </div>
                 <div className={styles.finalTotal}>${totalPrice}</div>
               </div>
             </div>
-            {/* ------------------------------- */}
 
             <div className={styles.actions}>
               <button

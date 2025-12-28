@@ -6,10 +6,9 @@ const Product = require("../models/Product");
 // --- 1. Setup Image Storage ---
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/"); // Files go to 'backend/uploads'
+    cb(null, "uploads/");
   },
   filename: function (req, file, cb) {
-    // Rename file to avoid duplicates (e.g., 17823612-speaker.jpg)
     cb(null, Date.now() + "-" + file.originalname);
   },
 });
@@ -26,8 +25,18 @@ router.get("/", async (req, res) => {
   }
 });
 
-// --- 3. POST New Product (Admin Only) ---
-// Note: 'image' matches the name attribute in the frontend form
+// --- 3. GET Single Product ---
+router.get("/:id", async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ message: "Product not found" });
+    res.json(product);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// --- 4. POST New Product ---
 router.post("/", upload.single("image"), async (req, res) => {
   try {
     if (!req.file) {
@@ -39,7 +48,6 @@ router.post("/", upload.single("image"), async (req, res) => {
       category: req.body.category,
       pricePerDay: req.body.pricePerDay,
       description: req.body.description,
-      // We save the relative path
       image: `/uploads/${req.file.filename}`,
     });
 
@@ -47,6 +55,34 @@ router.post("/", upload.single("image"), async (req, res) => {
     res.status(201).json(newProduct);
   } catch (err) {
     res.status(400).json({ message: err.message });
+  }
+});
+
+// --- 5. PUT Update Product ---
+router.put("/:id", upload.single("image"), async (req, res) => {
+  try {
+    const { name, category, pricePerDay, description } = req.body;
+    let updateData = { name, category, pricePerDay, description };
+
+    // If a new file is uploaded, update the image path
+    if (req.file) {
+      updateData.image = `/uploads/${req.file.filename}`;
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    res.json(updatedProduct);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+// --- 6. DELETE Product ---
+router.delete("/:id", async (req, res) => {
+  try {
+    await Product.findByIdAndDelete(req.params.id);
+    res.json({ message: "Product deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
 
