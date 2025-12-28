@@ -1,0 +1,302 @@
+.wrapper {
+  background: var(--bg-main);
+  min-height: 100vh;
+  padding-top: 100px;
+}
+
+.detailContainer {
+  padding-bottom: 80px;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 32px;
+  transition: color 0.2s;
+}
+.backBtn:hover {
+  color: white;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 60px;
+}
+
+/* Gallery */
+.gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mainImage {
+  background: var(--bg-surface);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  aspect-ratio: 4/3;
+}
+
+.mainImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbnails {
+  display: flex;
+  gap: 12px;
+}
+
+.thumb,
+.thumbActive {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.thumbActive {
+  border-color: var(--accent);
+}
+.thumb img,
+.thumbActive img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Info Side */
+.info {
+  color: white;
+}
+
+.categoryTag {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--accent);
+  letter-spacing: 1px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 32px;
+}
+
+.reviews {
+  color: var(--text-muted);
+}
+.dot {
+  color: var(--text-muted);
+}
+
+/* Price Box */
+.priceBox {
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  margin-bottom: 32px;
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.currency {
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+}
+.price {
+  font-size: 2.5rem;
+  font-weight: 800;
+}
+.perDay {
+  color: var(--text-muted);
+}
+
+.stockStatus {
+  margin-top: 8px;
+  color: #4ade80; /* Green */
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.actions {
+  margin-bottom: 40px;
+}
+
+.addToCartBtn {
+  width: 100%;
+  background: white;
+  color: black;
+  height: 56px;
+  border-radius: 100px;
+  font-weight: 600;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: transform 0.2s;
+}
+
+.addToCartBtn:hover {
+  transform: scale(1.02);
+}
+
+.description {
+  margin-bottom: 40px;
+}
+.description h3,
+.specs h3 {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
+
+.description p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.specGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.specItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.specLabel {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.specValue {
+  font-weight: 500;
+}
+
+.trustFeatures {
+  margin-top: 40px;
+  display: flex;
+  gap: 24px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.trustItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.trustIcon {
+  color: var(--accent);
+}
+
+@media (max-width: 900px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+/* Add these to your existing ProductDetail.module.css */
+
+.configurator {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 32px;
+}
+
+.configRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.inputGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inputGroup label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.dateInput,
+.selectInput {
+  background: var(--bg-main);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.dateInput:focus,
+.selectInput:focus {
+  border-color: var(--accent);
+}
+
+/* Fix calendar icon color in some browsers */
+.dateInput::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+.priceSummary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.math {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.finalTotal {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+}

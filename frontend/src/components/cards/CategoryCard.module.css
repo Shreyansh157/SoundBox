@@ -1,0 +1,37 @@
+.card {
+  background: var(--bg-surface);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  height: 140px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  border-color: var(--accent);
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.iconBox {
+  color: var(--text-secondary);
+  transition: color 0.3s;
+}
+
+.card:hover .iconBox {
+  color: var(--accent);
+}
+
+.name {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.arrow {
+  display: none;
+} /* Hide arrow for cleaner look */

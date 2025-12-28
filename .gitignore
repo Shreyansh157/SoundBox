@@ -1,0 +1,16 @@
+# --- Global Ignores ---
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+
+# --- Security ---
+.env
+
+# --- Backend Specifics ---
+# backend/uploads/*
+
+# --- Frontend Specifics ---
+# Ignore the production build folder
+# frontend/dist/
+# frontend/build/
