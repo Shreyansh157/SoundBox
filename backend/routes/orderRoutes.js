@@ -21,7 +21,7 @@ router.post("/", async (req, res) => {
     // Send Email to Client (Owner)
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: "client-email@example.com", // PUT CLIENT'S EMAIL HERE
+      to: "software.developer.4717@gmail.com", // PUT CLIENT'S EMAIL HERE
       subject: `New Rental Request from ${savedOrder.customerName}`,
       text: `
         New Order Received!

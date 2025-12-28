@@ -1,11 +1,12 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Star, Zap, Activity, Users } from "lucide-react";
 import Navbar from "../components/layout/TopNav";
 import Footer from "../components/layout/Footer";
 import ProductCard from "../components/cards/ProductCard";
-import { CATEGORIES, PRODUCTS, CASES, TESTIMONIALS } from "../data/data";
+import { CATEGORIES, CASES, TESTIMONIALS } from "../data/data";
 import styles from "./Home.module.css";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -13,6 +14,20 @@ const fadeInUp = {
 };
 
 const Home = () => {
+  // Replace the hardcoded PRODUCTS with state
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/products");
+        setProducts(res.data); // Use the real data from DB
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      }
+    };
+    fetchProducts();
+  }, []);
   return (
     <div className={styles.wrapper}>
       <Navbar />
@@ -137,7 +152,7 @@ const Home = () => {
             </a>
           </div>
           <div className={styles.productGrid}>
-            {PRODUCTS.map((prod) => (
+            {products.map((prod) => (
               <ProductCard key={prod.id} product={prod} />
             ))}
           </div>

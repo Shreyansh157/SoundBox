@@ -6,8 +6,49 @@ import Navbar from "../components/layout/TopNav";
 import Footer from "../components/layout/Footer";
 import { useCart } from "../context/CartContext";
 import styles from "./Cart.module.css";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    customerName: "",
+    email: "",
+    phone: "",
+    address: "",
+    eventDate: "",
+  });
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmitOrder = async (e) => {
+    e.preventDefault();
+    try {
+      const orderData = {
+        ...formData,
+        items: cart.map((item) => ({
+          productId: item._id || item.id, // Handle both MongoDB _id and static id
+          productName: item.name,
+          quantity: item.quantity,
+        })),
+      };
+
+      // Send to Backend
+      await axios.post("http://localhost:5000/api/orders", orderData);
+
+      // Clear cart and redirect
+      localStorage.removeItem("soundbox_cart");
+      // You might need to add a clearCart() function to your Context
+      alert("Request Sent! We will call you shortly.");
+      window.location.href = "/"; // Force reload to clear state or use navigate('/')
+    } catch (err) {
+      console.error("Order Error:", err);
+      alert("Failed to send request. Check console.");
+    }
+  };
+
   const { cart, removeFromCart } = useCart();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
@@ -133,34 +174,31 @@ const Cart = () => {
                   Proceed to Checkout <ArrowRight size={18} />
                 </button>
               ) : (
-                <motion.form initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={styles.billingForm}>
-                  <h3>Billing Details</h3>
+                <motion.form initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={styles.billingForm} onSubmit={handleSubmitOrder}>
+                  <h3>Request Quote</h3>
 
                   <div className={styles.inputGroup}>
                     <label>Full Name</label>
-                    <input type="text" placeholder="John Doe" />
+                    <input name="customerName" required onChange={handleInputChange} type="text" placeholder="John Doe" />
+                  </div>
+
+                  <div className={styles.inputGroup}>
+                    <label>Phone Number (Required)</label>
+                    <input name="phone" required onChange={handleInputChange} type="tel" placeholder="98765 43210" />
                   </div>
 
                   <div className={styles.inputGroup}>
                     <label>Email Address</label>
-                    <input type="email" placeholder="john@example.com" />
+                    <input name="email" required onChange={handleInputChange} type="email" placeholder="john@example.com" />
                   </div>
 
                   <div className={styles.inputGroup}>
-                    <label>Card Information</label>
-                    <div className={styles.cardInput}>
-                      <CreditCard size={20} className={styles.cardIcon} />
-                      <input type="text" placeholder="0000 0000 0000 0000" />
-                    </div>
+                    <label>Delivery Address</label>
+                    <textarea name="address" required onChange={handleInputChange} placeholder="Full address..." rows="3"></textarea>
                   </div>
 
-                  <div className={styles.row}>
-                    <input type="text" placeholder="MM/YY" className={styles.smallInput} />
-                    <input type="text" placeholder="CVC" className={styles.smallInput} />
-                  </div>
-
-                  <button type="button" className={styles.payBtn}>
-                    <Lock size={16} /> Pay ${total.toFixed(2)}
+                  <button type="submit" className={styles.payBtn}>
+                    <ArrowRight size={16} /> Submit Request
                   </button>
                 </motion.form>
               )}
