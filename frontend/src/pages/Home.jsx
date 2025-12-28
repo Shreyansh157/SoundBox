@@ -143,7 +143,7 @@ const Home = () => {
       </section>
 
       {/* CASES SECTION */}
-      <section className={styles.section}>
+      {/* <section className={styles.section}>
         <div className="container">
           <div className={styles.header}>
             <h2>Recent Productions</h2>
@@ -160,7 +160,7 @@ const Home = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* TRENDING SECTION */}
       <section className={styles.section}>

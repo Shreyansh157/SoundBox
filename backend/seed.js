@@ -14,22 +14,25 @@ const sampleCategories = [
   {
     name: "Speakers",
     description: "Active PA systems, subwoofers & portable sound.",
-    image: "https://images.unsplash.com/photo-1543536448-d209d2d15a1c?q=80&w=800",
+    image:
+      "https://images.unsplash.com/photo-1545454675-3531b543be5d?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     name: "Microphones",
     description: "Wireless handhelds, studio condensers & instrument mics.",
-    image: "https://images.unsplash.com/photo-1590845947698-8924d7409b56?q=80&w=800",
+    image:
+      "https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     name: "DJ Gear",
     description: "Industry standard mixers, CDJs & controllers.",
-    image: "https://images.unsplash.com/photo-1571175443880-49e1d58b727d?q=80&w=800",
+    image:
+      "https://images.unsplash.com/photo-1594623930572-300a3011d9ae?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     name: "Lighting",
     description: "Moving heads, lasers, wash lights & atmospherics.",
-    image: "https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=800",
+    image: "https://images.unsplash.com/photo-1573339887617-d674bc961c31?ixlib=rb-4.1.0&auto=format&fit=crop&w=600&h=400&q=80",
   },
 ];
 
@@ -41,15 +44,17 @@ const sampleProducts = [
     category: "Speakers",
     pricePerDay: 45,
     description: "Huge sound, dazzling lights, and unbelievable power set this speaker apart from the crowd.",
-    image: "https://images.unsplash.com/photo-1543536448-d209d2d15a1c?q=80&w=800",
+    image:
+      "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?q=80&w=1031&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     isAvailable: true,
   },
   {
-    name: "Bose S1 Pro+",
+    name: "Marshall S1 Pro+",
     category: "Speakers",
     pricePerDay: 60,
     description: "The ultimate all-in-one PA system. Musicians, DJs, and general presenters can get professional sound instantly.",
-    image: "https://images.unsplash.com/photo-1554760548-5221b6191c94?q=80&w=800",
+    image:
+      "https://images.unsplash.com/photo-1671856114466-757e82694ff9?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     isAvailable: true,
   },
   {
@@ -57,7 +62,8 @@ const sampleProducts = [
     category: "Speakers",
     pricePerDay: 75,
     description: "Best-in-class loudspeaker for demanding audio professionals. 2000W Peak power.",
-    image: "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?q=80&w=800",
+    image:
+      "https://images.unsplash.com/photo-1545454675-3531b543be5d?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     isAvailable: true,
   },
   {
@@ -65,7 +71,8 @@ const sampleProducts = [
     category: "Speakers",
     pricePerDay: 50,
     description: "Bluetooth-enabled powered loudspeaker suitable for mains or monitors. Clear and punchy sound.",
-    image: "https://images.unsplash.com/photo-1519683109079-d5f539e1542f?q=80&w=800",
+    image:
+      "https://images.unsplash.com/photo-1612241143917-d05c85c43751?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     isAvailable: true,
   },
   {
@@ -73,7 +80,8 @@ const sampleProducts = [
     category: "Speakers",
     pricePerDay: 40,
     description: "Portable powered loudspeaker. The most compact in its lineup, capable of delivering a maximum SPL of 129dB.",
-    image: "https://images.unsplash.com/photo-1478737270239-2f02b77ac618?q=80&w=800",
+    image:
+      "https://images.unsplash.com/photo-1609702847389-b8aec1b0b929?q=80&w=963&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     isAvailable: true,
   },
   {
@@ -81,7 +89,8 @@ const sampleProducts = [
     category: "Speakers",
     pricePerDay: 55,
     description: "1300W high-performance powered loudspeaker with Dynamic Bass Response technology.",
-    image: "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?q=80&w=800",
+    image:
+      "https://images.unsplash.com/photo-1699567363076-4b614b65d57e?q=80&w=1034&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     isAvailable: true,
   },
 

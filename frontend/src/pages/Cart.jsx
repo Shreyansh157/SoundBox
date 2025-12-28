@@ -209,7 +209,7 @@ const Cart = () => {
                       required
                       onChange={handleInputChange}
                       type="date"
-                      style={{ colorScheme: "dark" }}
+                      // style={{ colorScheme: "dark" }}
                     />
                   </div>
 
