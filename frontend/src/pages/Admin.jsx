@@ -1,12 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Package, Tag, Plus, Pencil, Trash2, X, Check, Search, Upload } from "lucide-react";
+import { Package, Tag, Plus, Pencil, Trash2, X, Check, Search, Upload, Lock, LogOut } from "lucide-react";
 import Navbar from "../components/layout/TopNav";
 import { useInventory } from "../context/InventoryContext";
 import styles from "./Admin.module.css";
 
 const Admin = () => {
   const { products, categories, deleteProduct, addProduct, updateProduct, deleteCategory, addCategory, updateCategory } = useInventory();
+
+  // --- AUTH STATE ---
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+
+  // Check LocalStorage on Mount
+  useEffect(() => {
+    const auth = localStorage.getItem("sb_admin_auth");
+    if (auth === "true") {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  // Handle Login
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // SIMPLE CREDENTIALS (You can change these)
+    if (username === "admin" && password === "admin") {
+      setIsAuthenticated(true);
+      localStorage.setItem("sb_admin_auth", "true");
+      setLoginError("");
+    } else {
+      setLoginError("Invalid ID or Password");
+    }
+  };
+
+  // Handle Logout
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem("sb_admin_auth");
+    setUsername("");
+    setPassword("");
+  };
+  // ------------------
 
   const [activeTab, setActiveTab] = useState("products");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -100,6 +136,42 @@ const Admin = () => {
     setIsModalOpen(false);
   };
 
+  // --- RENDER LOGIN IF NOT AUTHENTICATED ---
+  if (!isAuthenticated) {
+    return (
+      <div className={styles.wrapper}>
+        <Navbar />
+        <div className={styles.loginContainer}>
+          <div className={styles.loginCard}>
+            <div className={styles.loginHeader}>
+              <Lock size={32} className={styles.lockIcon} />
+              <h2>Admin Access</h2>
+              <p>Enter your credentials to continue</p>
+            </div>
+
+            <form onSubmit={handleLogin} className={styles.form}>
+              <div className={styles.group}>
+                <label>Admin ID</label>
+                <input type="text" autoFocus value={username} onChange={(e) => setUsername(e.target.value)} placeholder="admin" />
+              </div>
+              <div className={styles.group}>
+                <label>Password</label>
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+              </div>
+
+              {loginError && <div className={styles.errorMsg}>{loginError}</div>}
+
+              <button type="submit" className={styles.submitBtn}>
+                Login to Dashboard
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --- RENDER DASHBOARD IF AUTHENTICATED ---
   return (
     <div className={styles.wrapper}>
       <Navbar />
@@ -120,6 +192,13 @@ const Admin = () => {
               <Tag size={20} /> Categories
             </button>
           </nav>
+
+          {/* Logout Button */}
+          <div style={{ marginTop: "20px", borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "20px" }}>
+            <button className={styles.logoutBtn} onClick={handleLogout}>
+              <LogOut size={20} /> Logout
+            </button>
+          </div>
         </div>
 
         {/* MAIN CONTENT */}

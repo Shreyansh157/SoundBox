@@ -6,7 +6,7 @@ import styles from "./Footer.module.css";
 const Footer = () => {
   return (
     <footer className={styles.footer}>
-      <div className={`container ${styles.container}`}>
+      <div className={`container ${styles.container} ${styles.top}`}>
         <div className={styles.brandCol}>
           <h3>SoundBox.</h3>
           <p>Professional audio equipment rentals for events, studios, and live performances.</p>
@@ -34,8 +34,8 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className={`container ${styles.bottom}`}>
-        <p>© 2024 SoundBox Rentals. All rights reserved.</p>
+      <div className={styles.bottom}>
+        <p>© 2025 SoundBox Rentals. All rights reserved.</p>
       </div>
     </footer>
   );
