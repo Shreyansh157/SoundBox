@@ -302,3 +302,213 @@
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 32px;
 }
+/* ... existing hero and stats styles ... */
+
+/* NEW: CLIENTS MARQUEE */
+.clientsSection {
+  padding: 60px 0;
+  background: var(--bg-main);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.marqueeContainer {
+  position: relative;
+  max-width: 100%;
+  padding: 20px 0;
+}
+
+.clientLabel {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 40px;
+}
+
+.marqueeTrack {
+  display: flex;
+  gap: 80px; /* Space between logos */
+  width: max-content;
+  animation: scroll 30s linear infinite; /* Adjust speed here */
+}
+
+.clientLogo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: opacity 0.3s;
+  filter: grayscale(100%) brightness(200%); /* Make logos white/grey */
+}
+
+.clientLogo:hover {
+  opacity: 1;
+  filter: grayscale(0%) brightness(100%); /* Color on hover */
+}
+
+.clientLogo img {
+  height: 40px; /* Uniform height */
+  width: auto;
+  max-width: 150px;
+  object-fit: contain;
+}
+
+/* Fades to hide edges cleanly */
+.overlayLeft,
+.overlayRight {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 150px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.overlayLeft {
+  left: 0;
+  background: linear-gradient(to right, var(--bg-main), transparent);
+}
+
+.overlayRight {
+  right: 0;
+  background: linear-gradient(to left, var(--bg-main), transparent);
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  } /* Move half way (since we duplicated the list) */
+}
+
+/* ... existing styles ... */
+
+/* REVIEWS SECTION */
+.reviewsSection {
+  padding: 80px 0 120px;
+  background: var(--bg-main);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.reviewsHeader {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.googleBrand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.googleText {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white; /* Or classic #5F6368 if light mode */
+  letter-spacing: -0.02em;
+}
+
+.ratingBadge {
+  background: white;
+  color: black;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.reviewsHeader p {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.reviewsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.reviewCard {
+  background: var(--bg-surface);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 24px;
+  transition: transform 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.reviewCard:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.reviewTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.reviewerInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.reviewerInfo h4 {
+  font-size: 0.95rem;
+  color: white;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.reviewDate {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.gLogo {
+  width: 20px;
+  height: 20px;
+  opacity: 0.8;
+}
+
+.starLine {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 16px;
+}
+
+.reviewText {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .reviewsGrid {
+    grid-template-columns: 1fr;
+  }
+}

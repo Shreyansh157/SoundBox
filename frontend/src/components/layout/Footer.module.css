@@ -1,55 +1,256 @@
 .footer {
-  background: #000;
-  padding: 50px 0 30px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  margin-top: 0;
+  background: #09090b; /* Very dark zinc */
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 80px;
+  position: relative;
+  overflow: hidden;
 }
 
-.container {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+/* --- NEWSLETTER SECTION --- */
+.newsletterSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 60px;
+  flex-wrap: wrap;
   gap: 40px;
+}
+
+.newsletterContent h2 {
+  font-size: 3rem;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+
+.gradientText {
+  background: linear-gradient(to right, #fff, var(--accent, #3b82f6));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.newsletterContent p {
+  color: var(--text-secondary, #a1a1aa);
+  font-size: 1.1rem;
+  max-width: 400px;
+}
+
+.inputGroup {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+  padding: 8px 8px 8px 24px;
+  width: 100%;
+  max-width: 400px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.inputGroup:focus-within {
+  border-color: var(--accent, #3b82f6);
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.inputIcon {
+  color: var(--text-muted, #71717a);
+  margin-right: 12px;
+}
+
+.inputGroup input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 1rem;
+  flex: 1;
+}
+
+.inputGroup button {
+  background: white;
+  color: black;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.inputGroup button:hover {
+  transform: translateX(3px);
+  background: var(--accent, #3b82f6);
+  color: white;
+}
+
+/* --- SEPARATOR --- */
+.separator {
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+  margin-bottom: 60px;
+}
+
+/* --- MAIN GRID --- */
+.mainGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: 60px;
   padding-bottom: 80px;
 }
 
-.top {
-  padding-bottom: 50px !important;
-}
-
+/* Brand Column */
 .brandCol h3 {
   font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  margin-bottom: 16px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 20px;
+  letter-spacing: -0.03em;
 }
 
 .brandCol p {
-  color: var(--text-muted);
-  max-width: 300px;
+  color: var(--text-muted, #71717a);
+  line-height: 1.6;
+  margin-bottom: 32px;
+  font-size: 0.95rem;
 }
 
-.linksCol h4 {
-  color: var(--text-primary);
+.socials {
+  display: flex;
+  gap: 16px;
+}
+
+.socialLink {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: all 0.2s;
+}
+
+.socialLink:hover {
+  background: white;
+  color: black;
+  transform: translateY(-3px);
+}
+
+/* Links Columns */
+.linksCol h4,
+.contactCol h4 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   margin-bottom: 24px;
-  font-size: 0.9rem;
 }
 
 .linksCol a {
   display: block;
+  color: var(--text-secondary, #a1a1aa);
   margin-bottom: 12px;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
+  text-decoration: none;
+  transition: color 0.2s, transform 0.2s;
+  font-size: 0.95rem;
 }
 
 .linksCol a:hover {
-  color: var(--text-primary);
+  color: white;
+  transform: translateX(5px);
 }
 
-.bottom {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  padding-top: 30px;
-  /* padding-bottom: 40px; */
+/* Contact Column */
+.contactItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.contactIcon {
+  color: var(--accent, #3b82f6);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.contactItem p {
+  color: var(--text-secondary, #a1a1aa);
+  line-height: 1.5;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* --- BOTTOM BAR --- */
+.bottomBar {
+  background: #000;
+  padding: 24px 0;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.bottomContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.bottomContent p {
+  color: var(--text-muted, #52525b);
+  font-size: 0.85rem;
+}
+
+.legalLinks {
+  display: flex;
+  gap: 24px;
+}
+
+.legalLinks a {
+  color: var(--text-muted, #52525b);
+  font-size: 0.85rem;
+  transition: color 0.2s;
+}
+
+.legalLinks a:hover {
+  color: white;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .mainGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .newsletterSection {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .newsletterContent h2 {
+    font-size: 2.5rem;
+  }
+
+  .inputGroup {
+    max-width: 100%;
+  }
+
+  .mainGrid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .bottomContent {
+    flex-direction: column;
+    text-align: center;
+  }
 }

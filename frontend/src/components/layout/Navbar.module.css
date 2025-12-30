@@ -1,31 +1,33 @@
 .navbar {
   height: var(--nav-height);
-  position: fixed; /* Fixed is more premium than sticky */
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 100;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  background: rgba(9, 9, 11, 0.7); /* Translucent Dark */
-  backdrop-filter: blur(16px); /* Heavy Blur */
+  background: rgba(9, 9, 11, 0.7);
+  backdrop-filter: blur(16px);
 }
 
 .navContainer {
   height: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; /* Pushes Logo left and Actions right */
+  position: relative; /* Essential for centering the links */
 }
 
+/* --- LEFT: Logo --- */
 .logo a {
   font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: -0.04em;
   color: var(--text-primary);
   position: relative;
+  text-decoration: none;
 }
 
-/* Add a cool dot to the logo */
 .logo a::after {
   content: "";
   width: 6px;
@@ -37,19 +39,28 @@
   box-shadow: 0 0 12px var(--accent-glow);
 }
 
+/* --- CENTER: Links --- */
 .desktopLinks {
+  position: absolute; /* Takes it out of the flex flow */
+  left: 50%;
+  transform: translateX(-50%); /* Perfectly centers it */
+
   display: flex;
   gap: 40px;
   background: var(--bg-surface);
   padding: 8px 32px;
   border-radius: var(--radius-full);
   border: 1px solid rgba(255, 255, 255, 0.05);
+  align-items: center;
+  white-space: nowrap; /* Prevents wrapping */
 }
 
 .desktopLinks a {
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s;
 }
 
 .desktopLinks a:hover,
@@ -57,28 +68,55 @@
   color: var(--text-primary);
 }
 
-/* Active Link Dot Indicator */
 .activeLink {
   position: relative;
 }
-.activeLink::after {
-  content: "";
-  position: absolute;
-  bottom: -4px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 4px;
-  background: var(--accent);
-  border-radius: 50%;
-}
 
+/* --- RIGHT: Actions (Search + Cart) --- */
 .actions {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
+/* Search Bar Styling */
+.searchBar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 200px; /* Slightly smaller width for the right side */
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.searchBar input {
+  width: 100%;
+  background: var(--bg-surface);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 8px 12px 8px 38px;
+  border-radius: 99px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.searchBar input:focus {
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.searchBar input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+/* Cart Button */
 .cartBtn {
   width: 44px;
   height: 44px;
@@ -91,6 +129,7 @@
   justify-content: center;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
+  text-decoration: none;
 }
 
 .cartBtn:hover {
@@ -108,4 +147,62 @@
   background: var(--accent);
   border-radius: 50%;
   border: 2px solid var(--bg-main);
+  font-size: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+/* --- Dropdown Logic (Same as before) --- */
+.dropdownWrapper {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.dropdownTrigger {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 150%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: #09090b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 180px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+  z-index: 200;
+}
+
+.dropdownWrapper:hover .dropdownMenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.dropdownItem {
+  display: block;
+  padding: 10px 16px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  border-radius: 8px;
+  white-space: nowrap;
+  text-decoration: none; /* Ensure no underline */
+}
+
+.dropdownItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--accent);
 }

@@ -1,138 +1,150 @@
 import React, { useState, useEffect } from "react";
-// 1. Import useLocation
 import { Link, useLocation } from "react-router-dom";
-import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, SlidersHorizontal, Check } from "lucide-react";
+import { Filter, ChevronDown, Check } from "lucide-react";
 import Navbar from "../components/layout/TopNav";
 import Footer from "../components/layout/Footer";
 import ProductCard from "../components/cards/ProductCard";
+import { PRODUCTS, CATEGORIES } from "../data/data";
 import styles from "./Equipment.module.css";
 
 const Equipment = () => {
-  // 2. Get Location
   const location = useLocation();
 
-  // 3. Initialize activeCategory with passed state OR "All"
-  const [activeCategory, setActiveCategory] = useState(location.state?.category || "All");
+  // --- FILTERS STATE ---
+  const [selectedCategory, setSelectedCategory] = useState(location.state?.category || "All");
+  const [priceRange, setPriceRange] = useState(200); // Max price
+  const [showMobileFilter, setShowMobileFilter] = useState(false);
 
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-
+  // Scroll to top on load
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [prodRes, catRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/products"),
-          axios.get("http://localhost:5000/api/categories"),
-        ]);
-        setProducts(prodRes.data);
-        setCategories(catRes.data);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error loading data:", err);
-        setLoading(false);
-      }
-    };
-    fetchData();
+    window.scrollTo(0, 0);
   }, []);
 
-  // Filter Logic
-  const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = activeCategory === "All" || product.category === activeCategory;
-    return matchesSearch && matchesCategory;
+  // --- FILTER LOGIC ---
+  const filteredProducts = PRODUCTS.filter((product) => {
+    // 1. Category Filter
+    const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
+    // 2. Price Filter
+    const matchesPrice = product.price <= priceRange;
+
+    return matchesCategory && matchesPrice;
   });
-
-  // Grouping Logic
-  const groupedProducts = {};
-  if (activeCategory === "All" && !searchTerm) {
-    categories.forEach((cat) => {
-      groupedProducts[cat.name] = products.filter((p) => p.category === cat.name);
-    });
-  } else {
-    groupedProducts["Results"] = filteredProducts;
-  }
-
-  if (loading) {
-    return (
-      <div className="container" style={{ paddingTop: "100px" }}>
-        Loading inventory...
-      </div>
-    );
-  }
 
   return (
     <div className={styles.wrapper}>
       <Navbar />
 
-      <div className={styles.topBar}>
-        <div className={`container ${styles.barContainer}`}>
-          <div className={styles.searchGroup}>
-            <Search className={styles.searchIcon} size={20} />
-            <input type="text" placeholder="Search speakers, mixers, lights..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+      <div className="container">
+        <div className={styles.layout}>
+          {/* --- LEFT SIDEBAR --- */}
+          <aside className={`${styles.sidebar} ${showMobileFilter ? styles.mobileShow : ""}`}>
+            <div className={styles.filterHeader}>
+              <h3>Filters</h3>
+              <button className={styles.closeBtn} onClick={() => setShowMobileFilter(false)}>
+                Close
+              </button>
+            </div>
 
-            <div className={styles.divider}></div>
-            <button className={`${styles.filterBtn} ${isFilterOpen ? styles.activeFilter : ""}`} onClick={() => setIsFilterOpen(!isFilterOpen)}>
-              <SlidersHorizontal size={18} />
-              <span>Filter</span>
-              {activeCategory !== "All" && <div className={styles.dot} />}
-            </button>
-          </div>
-
-          <AnimatePresence>
-            {isFilterOpen && (
-              <motion.div className={styles.filterMenu} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}>
-                <div className={styles.menuHeader}>
-                  <span>Categories</span>
-                  <button onClick={() => setActiveCategory("All")} className={styles.clearBtn}>
-                    Clear
+            {/* Category Filter */}
+            <div className={styles.filterGroup}>
+              <h4>Category</h4>
+              <div className={styles.optionList}>
+                <button
+                  className={`${styles.optionBtn} ${selectedCategory === "All" ? styles.activeOption : ""}`}
+                  onClick={() => setSelectedCategory("All")}
+                >
+                  All Equipment
+                </button>
+                {CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.id}
+                    className={`${styles.optionBtn} ${selectedCategory === cat.name ? styles.activeOption : ""}`}
+                    onClick={() => setSelectedCategory(cat.name)}
+                  >
+                    {cat.name}
                   </button>
-                </div>
+                ))}
+              </div>
+            </div>
 
-                <div className={styles.categoryList}>
-                  {categories.map((cat) => (
-                    <button
-                      key={cat._id}
-                      className={`${styles.catOption} ${activeCategory === cat.name ? styles.selected : ""}`}
-                      onClick={() => {
-                        setActiveCategory(cat.name);
-                        setIsFilterOpen(false);
-                      }}
-                    >
-                      {cat.name}
-                      {activeCategory === cat.name && <Check size={16} />}
-                    </button>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
+            {/* Price Filter */}
+            <div className={styles.filterGroup}>
+              <div className={styles.rangeHeader}>
+                <h4>Max Price / Day</h4>
+                <span>${priceRange}</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="200"
+                step="5"
+                value={priceRange}
+                onChange={(e) => setPriceRange(Number(e.target.value))}
+                className={styles.rangeInput}
+              />
+              <div className={styles.rangeLabels}>
+                <span>$0</span>
+                <span>$200+</span>
+              </div>
+            </div>
 
-      <div className={`container ${styles.mainContent}`}>
-        {Object.entries(groupedProducts).map(
-          ([category, items]) =>
-            items.length > 0 && (
-              <section key={category} className={styles.categorySection}>
-                <h2 className={styles.categoryTitle}>
-                  {category === "Results" ? (searchTerm ? `Results for "${searchTerm}"` : activeCategory) : category}
-                </h2>
+            {/* Duration / Battery Filter (Demo) */}
+            <div className={styles.filterGroup}>
+              <h4>Battery Life</h4>
+              <div className={styles.checkboxList}>
+                <label className={styles.checkboxLabel}>
+                  <input type="checkbox" /> <span>8+ Hours</span>
+                </label>
+                <label className={styles.checkboxLabel}>
+                  <input type="checkbox" /> <span>12+ Hours</span>
+                </label>
+              </div>
+            </div>
+          </aside>
 
-                <div className={styles.grid}>
-                  {items.map((product) => (
-                    <Link to={`/product/${product._id}`} key={product._id} className={styles.cardLink}>
+          {/* --- MAIN CONTENT --- */}
+          <main className={styles.mainContent}>
+            {/* Header Area */}
+            <div className={styles.contentHeader}>
+              <div>
+                <h1 className={styles.pageTitle}>{selectedCategory === "All" ? "All Equipment" : selectedCategory}</h1>
+                <p className={styles.resultsCount}>{filteredProducts.length} results found</p>
+              </div>
+
+              {/* Mobile Filter Toggle */}
+              <button className={styles.mobileFilterBtn} onClick={() => setShowMobileFilter(true)}>
+                <Filter size={18} /> Filters
+              </button>
+            </div>
+
+            {/* Product Grid */}
+            {filteredProducts.length > 0 ? (
+              <motion.div layout className={styles.grid}>
+                <AnimatePresence>
+                  {filteredProducts.map((product) => (
+                    <Link to={`/product/${product.id}`} key={product.id}>
                       <ProductCard product={product} />
                     </Link>
                   ))}
-                </div>
-              </section>
-            )
-        )}
+                </AnimatePresence>
+              </motion.div>
+            ) : (
+              <div className={styles.noResults}>
+                <h3>No gear found</h3>
+                <p>Try adjusting your filters to see more results.</p>
+                <button
+                  onClick={() => {
+                    setSelectedCategory("All");
+                    setPriceRange(200);
+                  }}
+                >
+                  Clear Filters
+                </button>
+              </div>
+            )}
+          </main>
+        </div>
       </div>
 
       <Footer />

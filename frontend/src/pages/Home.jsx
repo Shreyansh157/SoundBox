@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
-// 1. Import Link and useNavigate
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Activity, Users, Zap, Speaker, Mic2, Music, Radio } from "lucide-react";
+import { ArrowRight, Activity, Users, Zap, Speaker, Mic2, Music, Radio, Star } from "lucide-react"; // Import Star
 import Navbar from "../components/layout/TopNav";
 import Footer from "../components/layout/Footer";
 import ProductCard from "../components/cards/ProductCard";
-import { CASES, TESTIMONIALS } from "../data/data";
+import { CASES, CLIENTS, GOOGLE_REVIEWS } from "../data/data"; // 1. IMPORT GOOGLE_REVIEWS
 import styles from "./Home.module.css";
 
+// ... Keep existing constants (fadeInUp, CATEGORY_ICONS) ...
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
@@ -26,11 +26,10 @@ const CATEGORY_ICONS = {
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-
-  // 2. Initialize Navigation Hook
   const navigate = useNavigate();
 
   useEffect(() => {
+    // ... Keep existing fetch logic ...
     const fetchData = async () => {
       try {
         const [prodRes, catRes] = await Promise.all([
@@ -50,9 +49,7 @@ const Home = () => {
     return CATEGORY_ICONS[name] || CATEGORY_ICONS["Default"];
   };
 
-  // 3. Handle Category Click
   const handleCategoryClick = (categoryName) => {
-    // Navigate to /equipment and pass the category name in the 'state' object
     navigate("/equipment", { state: { category: categoryName } });
   };
 
@@ -105,6 +102,22 @@ const Home = () => {
         </div>
       </section>
 
+      {/* TRUSTED CLIENTS CAROUSEL */}
+      <section className={styles.clientsSection}>
+        <div className={styles.marqueeContainer}>
+          <p className={styles.clientLabel}>Trusted by industry leaders</p>
+          <div className={styles.marqueeTrack}>
+            {[...CLIENTS, ...CLIENTS].map((client, index) => (
+              <div key={index} className={styles.clientLogo}>
+                <img src={client.logo} alt={client.name} />
+              </div>
+            ))}
+          </div>
+          <div className={styles.overlayLeft} />
+          <div className={styles.overlayRight} />
+        </div>
+      </section>
+
       {/* SOLUTIONS SECTION */}
       <section className={styles.section}>
         <div className="container">
@@ -122,7 +135,6 @@ const Home = () => {
                   key={cat._id}
                   className={styles.solutionCard}
                   whileHover={{ y: -5 }}
-                  // 4. Attach Click Handler
                   onClick={() => handleCategoryClick(cat.name)}
                   style={{ cursor: "pointer" }}
                 >
@@ -142,26 +154,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* CASES SECTION */}
-      {/* <section className={styles.section}>
-        <div className="container">
-          <div className={styles.header}>
-            <h2>Recent Productions</h2>
-          </div>
-          <div className={styles.caseGrid}>
-            {CASES.map((item) => (
-              <div key={item.id} className={styles.caseCard}>
-                <img src={item.image} alt={item.title} />
-                <div className={styles.caseInfo}>
-                  <span>{item.type}</span>
-                  <h3>{item.title}</h3>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section> */}
-
       {/* TRENDING SECTION */}
       <section className={styles.section}>
         <div className="container">
@@ -173,10 +165,54 @@ const Home = () => {
           </div>
           <div className={styles.productGrid}>
             {products.slice(0, 4).map((prod) => (
-              // 5. Wrap ProductCard in Link
               <Link to={`/product/${prod._id}`} key={prod._id} style={{ textDecoration: "none" }}>
                 <ProductCard product={prod} />
               </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* NEW: GOOGLE REVIEWS SECTION */}
+      <section className={styles.reviewsSection}>
+        <div className="container">
+          <div className={styles.reviewsHeader}>
+            <div className={styles.googleBrand}>
+              <span className={styles.googleText}>Google</span>
+              <div className={styles.ratingBadge}>
+                <span>4.9</span>
+                <div className={styles.starsRow}>
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={12} fill="#F4B400" stroke="none" />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <p>Based on 120+ reviews</p>
+          </div>
+
+          <div className={styles.reviewsGrid}>
+            {GOOGLE_REVIEWS.map((review) => (
+              <div key={review.id} className={styles.reviewCard}>
+                <div className={styles.reviewTop}>
+                  <div className={styles.reviewerInfo}>
+                    <div className={styles.avatar} style={{ background: review.color }}>
+                      {review.avatar}
+                    </div>
+                    <div>
+                      <h4>{review.author}</h4>
+                      <span className={styles.reviewDate}>{review.date}</span>
+                    </div>
+                  </div>
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google" className={styles.gLogo} />
+                </div>
+                <div className={styles.starLine}>
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={14} fill="#F4B400" stroke="none" />
+                  ))}
+                </div>
+                <p className={styles.reviewText}>{review.text}</p>
+              </div>
             ))}
           </div>
         </div>

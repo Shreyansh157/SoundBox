@@ -140,3 +140,44 @@ export const TIMELINE = [
   { year: "2021", title: "Tech Expansion", desc: "Launched our proprietary real-time booking platform." },
   { year: "2024", title: "Citywide Network", desc: "Now operating 3 warehouses with 2-hour delivery." },
 ];
+// ... existing exports ...
+
+export const CLIENTS = [
+  { id: 1, name: "Spotify", logo: "https://upload.wikimedia.org/wikipedia/commons/2/26/Spotify_logo_with_text.svg" },
+  { id: 2, name: "Red Bull", logo: "https://upload.wikimedia.org/wikipedia/en/f/f5/RedBullEnergyDrink.svg" },
+  { id: 3, name: "TedX", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a8/TEDx_logo.svg" },
+  { id: 4, name: "Live Nation", logo: "https://upload.wikimedia.org/wikipedia/commons/8/86/Live_Nation_Entertainment_logo.svg" },
+  { id: 5, name: "Sony Music", logo: "https://upload.wikimedia.org/wikipedia/commons/c/c1/Sony_Music_logo.svg" },
+  { id: 6, name: "Boiler Room", logo: "https://upload.wikimedia.org/wikipedia/commons/b/b3/Boiler_Room_logo.png" },
+];
+// ... existing imports and exports ...
+
+export const GOOGLE_REVIEWS = [
+  {
+    id: 1,
+    author: "James Peterson",
+    date: "2 months ago",
+    rating: 5,
+    text: "Rented a full PA system for my wedding. The team was incredibly professional and the sound quality was perfect. Set up and tear down was seamless.",
+    avatar: "J", // You can use an image URL here if you have one
+    color: "#f97316", // Orange accent for avatar
+  },
+  {
+    id: 2,
+    author: "Elena Rodriguez",
+    date: "1 week ago",
+    rating: 5,
+    text: "Saved our corporate event! We had a last-minute mic failure and SoundBox delivered replacements within an hour. unparalleled customer service.",
+    avatar: "E",
+    color: "#8b5cf6", // Purple accent
+  },
+  {
+    id: 3,
+    author: "Mike 'DJ' T.",
+    date: "3 weeks ago",
+    rating: 4.8, // We'll just show 5 stars visually
+    text: "Best rates in the city for Pioneer gear. The equipment is always clean and updated with the latest firmware. Highly recommend for working DJs.",
+    avatar: "M",
+    color: "#10b981", // Green accent
+  },
+];

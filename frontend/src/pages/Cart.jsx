@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trash2, ArrowRight, ShoppingBag, Lock, Calendar, Clock, Loader2 } from "lucide-react";
+import { Trash2, ArrowRight, ShoppingBag, Lock, Calendar, Clock, Loader2, Minus, Plus } from "lucide-react"; // Added Minus, Plus
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/layout/TopNav";
@@ -10,10 +10,11 @@ import styles from "./Cart.module.css";
 
 const Cart = () => {
   const navigate = useNavigate();
-  const { cart, removeFromCart } = useCart();
+  // Import new functions
+  const { cart, removeFromCart, increaseQuantity, decreaseQuantity } = useCart();
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false); // <--- NEW STATE
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     customerName: "",
@@ -29,11 +30,8 @@ const Cart = () => {
 
   const handleSubmitOrder = async (e) => {
     e.preventDefault();
-
-    // Prevent double submission
     if (isSubmitting) return;
-
-    setIsSubmitting(true); // <--- DISABLE BUTTON
+    setIsSubmitting(true);
 
     try {
       const orderData = {
@@ -47,18 +45,16 @@ const Cart = () => {
 
       await axios.post("http://localhost:5000/api/orders", orderData);
 
-      // Clear Cart & Redirect
       localStorage.removeItem("soundbox_cart");
       alert("Request Sent Successfully! Check your inbox.");
       window.location.href = "/";
     } catch (err) {
       console.error("Order Error:", err);
       alert("Failed to send request. Make sure all fields are filled.");
-      setIsSubmitting(false); // <--- RE-ENABLE BUTTON IF ERROR
+      setIsSubmitting(false);
     }
   };
 
-  // --- CALCULATIONS ---
   const subtotal = cart.reduce((total, item) => {
     const duration = item.days || 1;
     const price = item.pricePerDay || item.price || 0;
@@ -133,11 +129,21 @@ const Cart = () => {
                     </div>
                   </div>
 
+                  {/* --- MODIFIED QUANTITY SECTION --- */}
                   <div className={styles.quantityControl}>
-                    <button onClick={() => removeFromCart(item.id)} className={styles.removeBtn} title="Remove">
+                    <button onClick={() => decreaseQuantity(item.id)} className={styles.qtyBtn} disabled={item.quantity <= 1}>
+                      <Minus size={14} />
+                    </button>
+
+                    <span className={styles.qtyDisplay}>{item.quantity}</span>
+
+                    <button onClick={() => increaseQuantity(item.id)} className={styles.qtyBtn}>
+                      <Plus size={14} />
+                    </button>
+
+                    <button onClick={() => removeFromCart(item.id)} className={styles.removeBtn} title="Remove Item">
                       <Trash2 size={16} />
                     </button>
-                    <span className={styles.qtyDisplay}>{item.quantity}</span>
                   </div>
 
                   <div className={styles.itemTotal}>${((item.pricePerDay || item.price) * item.quantity * (item.days || 1)).toFixed(2)}</div>
@@ -203,14 +209,7 @@ const Cart = () => {
 
                   <div className={styles.inputGroup}>
                     <label>Event Date</label>
-                    <input
-                      name="eventDate"
-                      value={formData.eventDate}
-                      required
-                      onChange={handleInputChange}
-                      type="date"
-                      // style={{ colorScheme: "dark" }}
-                    />
+                    <input name="eventDate" value={formData.eventDate} required onChange={handleInputChange} type="date" />
                   </div>
 
                   <div className={styles.inputGroup}>
@@ -225,20 +224,15 @@ const Cart = () => {
                     ></textarea>
                   </div>
 
-                  {/* --- UPDATED BUTTON --- */}
                   <button
                     type="submit"
                     className={styles.payBtn}
-                    disabled={isSubmitting} // Logic to disable
-                    style={{
-                      opacity: isSubmitting ? 0.7 : 1,
-                      cursor: isSubmitting ? "not-allowed" : "pointer",
-                    }}
+                    disabled={isSubmitting}
+                    style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? "not-allowed" : "pointer" }}
                   >
                     {isSubmitting ? (
                       <>
-                        <Loader2 size={18} className="spin-icon" style={{ animation: "spin 1s linear infinite" }} />
-                        Processing...
+                        <Loader2 size={18} style={{ animation: "spin 1s linear infinite" }} /> Processing...
                       </>
                     ) : (
                       <>
@@ -249,19 +243,13 @@ const Cart = () => {
                 </motion.form>
               )}
             </div>
-
             <p className={styles.secureText}>
               <Lock size={12} /> Secure 256-bit SSL Encrypted payment.
             </p>
           </div>
         </div>
       </div>
-
-      {/* Add simple keyframe for spinner if not present globally */}
-      <style>{`
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-      `}</style>
-
+      <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
       <Footer />
     </div>
   );
