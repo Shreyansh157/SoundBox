@@ -1,10 +1,46 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sound-rental</title>
+    <title>SoundBox Premier</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              serif: ['"Playfair Display"', "serif"],
+              sans: ['"Manrope"', "sans-serif"],
+            },
+            colors: {
+              "brand-gold": "#D4AF37" /* Classic Gold */,
+              "brand-dark": "#0f0f0f" /* Almost Black */,
+              "brand-gray": "#F5F5F0" /* Warm Off-White */,
+              "glass-white": "rgba(255, 255, 255, 0.9)",
+            },
+            backgroundImage: {
+              "hero-pattern": "url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070&auto=format&fit=crop')",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #f5f5f0;
+        color: #0f0f0f;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

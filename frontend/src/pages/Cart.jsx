@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trash2, ArrowRight, ShoppingBag, Lock, Calendar, Clock, Loader2, Plus, Minus } from "lucide-react";
+import { Trash2, ArrowRight, ShoppingBag, Lock, Calendar, Clock, Loader2, Plus, Minus, ArrowLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/layout/TopNav";
 import Footer from "../components/layout/Footer";
 import { useCart } from "../context/CartContext";
-import styles from "./Cart.module.css";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -66,220 +65,284 @@ const Cart = () => {
   const taxAmount = subtotal * taxRate;
   const total = subtotal + taxAmount;
 
+  // --- EMPTY STATE ---
   if (cart.length === 0) {
     return (
-      <div className={styles.wrapper}>
+      <div className="font-sans antialiased bg-brand-gray min-h-screen flex flex-col selection:bg-brand-gold selection:text-white">
         <Navbar />
-        <div className={`container ${styles.emptyContainer}`}>
-          <ShoppingBag size={64} className={styles.emptyIcon} />
-          <h1>Your cart is empty.</h1>
-          <p>Ready to start your production? Browse our inventory.</p>
-          <Link to="/equipment" className={styles.browseBtn}>
+        {/* SPACER FOR FIXED NAVBAR */}
+        <div className="w-full h-32 flex-shrink-0"></div>
+
+        <div className="flex-1 flex flex-col items-center justify-center text-center px-6 pb-20">
+          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg mb-8 text-brand-gold">
+            <ShoppingBag size={48} />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-serif font-bold text-brand-dark mb-4">Your cart is empty.</h1>
+          <p className="text-gray-500 mb-10 text-lg">Ready to start your production? Browse our inventory.</p>
+          <Link
+            to="/equipment"
+            className="px-10 py-4 bg-brand-dark text-white font-bold uppercase tracking-widest hover:bg-brand-gold transition-colors rounded-sm"
+          >
             Browse Equipment
           </Link>
         </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className={styles.wrapper}>
+    <div className="font-sans antialiased bg-brand-gray min-h-screen flex flex-col selection:bg-brand-gold selection:text-white">
       <Navbar />
 
-      <div className={`container ${styles.cartContainer}`}>
-        <h1 className={styles.pageTitle}>Rental Cart</h1>
+      {/* --- SPACER DIV --- */}
+      {/* This invisible block pushes content down below the fixed navbar reliably */}
+      <div className="w-full h-32 flex-shrink-0"></div>
 
-        <div className={styles.grid}>
-          {/* LEFT COLUMN: CART ITEMS */}
-          <div className={styles.itemsColumn}>
-            {/* Updated Grid Header */}
-            <div className={styles.itemsHeader}>
-              <span>Product</span>
-              <span>Rate / Duration</span>
-              <span style={{ textAlign: "center" }}>Qty</span>
-              <span>Total</span>
-              <span></span> {/* Remove Column */}
+      <div className="container mx-auto px-6 pb-24 flex-1">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-12">
+          <h1 className="text-4xl font-serif font-bold text-brand-dark">Rental Cart</h1>
+          <Link
+            to="/equipment"
+            className="hidden md:flex items-center text-sm font-bold uppercase tracking-widest text-gray-500 hover:text-brand-dark transition-colors"
+          >
+            <ArrowLeft size={16} className="mr-2" /> Continue Browsing
+          </Link>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-12">
+          {/* --- LEFT COLUMN: CART ITEMS --- */}
+          <div className="flex-1">
+            {/* Table Header (Desktop) */}
+            <div className="hidden md:grid grid-cols-12 gap-4 pb-4 border-b border-gray-200 text-xs font-bold uppercase tracking-widest text-gray-400 mb-6">
+              <div className="col-span-6">Product</div>
+              <div className="col-span-2">Rate / Dur</div>
+              <div className="col-span-2 text-center">Qty</div>
+              <div className="col-span-2 text-right">Total</div>
             </div>
 
-            <AnimatePresence>
-              {cart.map((item) => {
-                const itemId = item._id || item.id;
+            <div className="space-y-6">
+              <AnimatePresence>
+                {cart.map((item) => {
+                  const itemId = item._id || item.id;
+                  const duration = item.days || 1;
+                  const price = item.pricePerDay || item.price || 0;
+                  const itemTotal = price * item.quantity * duration;
+                  const imgSrc = item.image && item.image.startsWith("http") ? item.image : `http://localhost:5000${item.image}`;
 
-                return (
-                  <motion.div
-                    key={itemId}
-                    layout
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className={styles.cartItem}
-                  >
-                    {/* 1. Product Info */}
-                    <div className={styles.itemInfo}>
-                      <img src={item.image && item.image.startsWith("http") ? item.image : `http://localhost:5000${item.image}`} alt={item.name} />
-                      <div>
-                        <h3>{item.name}</h3>
-                        <div className={styles.metaRow}>
+                  return (
+                    <motion.div
+                      key={itemId}
+                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex flex-col md:grid md:grid-cols-12 gap-6 items-center"
+                    >
+                      {/* 1. Product Info */}
+                      <div className="col-span-6 w-full flex items-center gap-6">
+                        <div className="w-20 h-20 bg-gray-50 rounded-lg flex-shrink-0 flex items-center justify-center overflow-hidden border border-gray-100">
+                          <img src={imgSrc} alt={item.name} className="w-full h-full object-contain" />
+                        </div>
+                        <div>
+                          <h3 className="font-serif font-bold text-brand-dark text-lg mb-1">{item.name}</h3>
                           {item.startDate && (
-                            <span className={styles.dateBadge}>
-                              <Calendar size={10} /> {item.startDate}
-                            </span>
+                            <div className="inline-flex items-center gap-1 text-xs text-brand-gold bg-brand-gold/10 px-2 py-1 rounded font-bold uppercase tracking-wider">
+                              <Calendar size={12} /> {item.startDate}
+                            </div>
                           )}
                         </div>
                       </div>
-                    </div>
 
-                    {/* 2. Rate */}
-                    <div className={styles.rateColumn}>
-                      <div className={styles.basePrice}>${item.pricePerDay || item.price} / day</div>
-                      <div className={styles.durationBadge}>
-                        <Clock size={12} /> {item.days || 1} Days
+                      {/* 2. Rate */}
+                      <div className="col-span-2 w-full md:w-auto flex flex-row md:flex-col justify-between md:justify-center items-center md:items-start text-sm">
+                        <span className="md:hidden font-bold text-gray-400 text-xs uppercase">Rate</span>
+                        <div>
+                          <div className="font-bold text-brand-dark">
+                            ${price} <span className="text-gray-400 font-normal">/ day</span>
+                          </div>
+                          <div className="text-gray-500 text-xs flex items-center gap-1 mt-1">
+                            <Clock size={12} /> {duration} Days
+                          </div>
+                        </div>
                       </div>
-                    </div>
 
-                    {/* 3. Quantity Control */}
-                    <div className={styles.quantityControl}>
-                      <button
-                        onClick={() => {
-                          if (item.quantity === 1) {
-                            removeFromCart(itemId);
-                          } else {
-                            decreaseQuantity(itemId);
-                          }
-                        }}
-                        className={styles.qtyBtn}
-                      >
-                        <Minus size={14} />
-                      </button>
+                      {/* 3. Quantity */}
+                      <div className="col-span-2 w-full md:w-auto flex flex-row md:flex-col justify-between md:justify-center items-center">
+                        <span className="md:hidden font-bold text-gray-400 text-xs uppercase">Quantity</span>
+                        <div className="flex items-center bg-gray-50 rounded-lg border border-gray-200">
+                          <button
+                            onClick={() => (item.quantity === 1 ? removeFromCart(itemId) : decreaseQuantity(itemId))}
+                            className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-brand-dark transition-colors"
+                          >
+                            <Minus size={14} />
+                          </button>
+                          <span className="w-8 text-center font-bold text-sm text-brand-dark">{item.quantity}</span>
+                          <button
+                            onClick={() => increaseQuantity(itemId)}
+                            className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-brand-dark transition-colors"
+                          >
+                            <Plus size={14} />
+                          </button>
+                        </div>
+                      </div>
 
-                      <span className={styles.qtyDisplay}>{item.quantity}</span>
-
-                      <button onClick={() => increaseQuantity(itemId)} className={styles.qtyBtn}>
-                        <Plus size={14} />
-                      </button>
-                    </div>
-
-                    {/* 4. Total */}
-                    <div className={styles.itemTotal}>${((item.pricePerDay || item.price) * item.quantity * (item.days || 1)).toFixed(2)}</div>
-
-                    {/* 5. Remove Button */}
-                    <div className={styles.removeColumn}>
-                      <button onClick={() => removeFromCart(itemId)} className={styles.removeBtn} title="Remove">
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </AnimatePresence>
+                      {/* 4. Total & Remove */}
+                      <div className="col-span-2 w-full md:w-auto flex justify-between items-center md:block text-right">
+                        <span className="md:hidden font-bold text-gray-400 text-xs uppercase">Total</span>
+                        <div>
+                          <div className="font-bold text-brand-dark text-lg">${itemTotal.toFixed(2)}</div>
+                          <button
+                            onClick={() => removeFromCart(itemId)}
+                            className="text-gray-400 hover:text-red-500 text-xs mt-2 transition-colors flex items-center justify-end gap-1 ml-auto"
+                          >
+                            <Trash2 size={12} /> Remove
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
           </div>
 
-          {/* RIGHT COLUMN: SUMMARY */}
-          <div className={styles.summaryColumn}>
-            <div className={styles.summaryCard}>
-              <h2>Order Summary</h2>
+          {/* --- RIGHT COLUMN: SUMMARY --- */}
+          <div className="w-full lg:w-96">
+            <div className="bg-white rounded-xl shadow-xl shadow-brand-dark/5 border border-gray-100 p-8 sticky top-32">
+              <h2 className="text-2xl font-serif font-bold text-brand-dark mb-6">Order Summary</h2>
 
-              <div className={styles.costRow}>
-                <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
-              </div>
-              <div className={styles.costRow}>
-                <span>Tax (8.875%)</span>
-                <span>${taxAmount.toFixed(2)}</span>
-              </div>
-              <div className={styles.costRow}>
-                <span>Damage Protection</span>
-                <span>FREE</span>
-              </div>
-
-              <div className={styles.divider} />
-
-              <div className={`${styles.costRow} ${styles.totalRow}`}>
-                <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+              {/* Cost Breakdown */}
+              <div className="space-y-4 mb-6 text-sm">
+                <div className="flex justify-between text-gray-600">
+                  <span>Subtotal</span>
+                  <span className="font-bold text-brand-dark">${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-gray-600">
+                  <span>Tax (8.875%)</span>
+                  <span className="font-bold text-brand-dark">${taxAmount.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-brand-gold font-bold">
+                  <span>Damage Protection</span>
+                  <span>FREE</span>
+                </div>
               </div>
 
+              <div className="h-px bg-gray-100 my-6"></div>
+
+              <div className="flex justify-between items-end mb-8">
+                <span className="text-gray-500 font-bold uppercase tracking-widest text-xs mb-1">Total Due</span>
+                <span className="text-3xl font-serif font-bold text-brand-dark">${total.toFixed(2)}</span>
+              </div>
+
+              {/* Checkout / Form Toggle */}
               {!isCheckingOut ? (
-                <button className={styles.checkoutBtn} onClick={() => setIsCheckingOut(true)}>
+                <button
+                  onClick={() => setIsCheckingOut(true)}
+                  className="w-full py-4 bg-brand-dark text-white font-bold uppercase tracking-widest hover:bg-brand-gold transition-all rounded-lg flex items-center justify-center gap-2"
+                >
                   Proceed to Checkout <ArrowRight size={18} />
                 </button>
               ) : (
-                <motion.form initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={styles.billingForm} onSubmit={handleSubmitOrder}>
-                  <h3>Request Quote</h3>
+                <motion.form initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmitOrder} className="space-y-4">
+                  <div className="bg-brand-gray p-4 rounded-lg border border-gray-200 mb-4">
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-brand-dark mb-4 border-b border-gray-200 pb-2">Request Quote</h3>
 
-                  <div className={styles.inputGroup}>
-                    <label>Full Name</label>
-                    <input
-                      name="customerName"
-                      value={formData.customerName}
-                      required
-                      onChange={handleInputChange}
-                      type="text"
-                      placeholder="John Doe"
-                    />
-                  </div>
-
-                  <div className={styles.inputGroup}>
-                    <label>Phone Number</label>
-                    <input name="phone" value={formData.phone} required onChange={handleInputChange} type="tel" placeholder="98765 43210" />
-                  </div>
-
-                  <div className={styles.inputGroup}>
-                    <label>Email Address</label>
-                    <input name="email" value={formData.email} required onChange={handleInputChange} type="email" placeholder="john@example.com" />
-                  </div>
-
-                  <div className={styles.inputGroup}>
-                    <label>Event Date</label>
-                    <input name="eventDate" value={formData.eventDate} required onChange={handleInputChange} type="date" />
-                  </div>
-
-                  <div className={styles.inputGroup}>
-                    <label>Delivery Address</label>
-                    <textarea
-                      name="address"
-                      value={formData.address}
-                      required
-                      onChange={handleInputChange}
-                      placeholder="Full address..."
-                      rows="3"
-                    ></textarea>
+                    <div className="space-y-3">
+                      <div>
+                        <input
+                          name="customerName"
+                          value={formData.customerName}
+                          required
+                          onChange={handleInputChange}
+                          type="text"
+                          placeholder="Full Name"
+                          className="w-full bg-white border border-gray-200 rounded px-3 py-2 text-sm outline-none focus:border-brand-gold transition-all"
+                        />
+                      </div>
+                      <div>
+                        <input
+                          name="phone"
+                          value={formData.phone}
+                          required
+                          onChange={handleInputChange}
+                          type="tel"
+                          placeholder="Phone Number"
+                          className="w-full bg-white border border-gray-200 rounded px-3 py-2 text-sm outline-none focus:border-brand-gold transition-all"
+                        />
+                      </div>
+                      <div>
+                        <input
+                          name="email"
+                          value={formData.email}
+                          required
+                          onChange={handleInputChange}
+                          type="email"
+                          placeholder="Email Address"
+                          className="w-full bg-white border border-gray-200 rounded px-3 py-2 text-sm outline-none focus:border-brand-gold transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] uppercase font-bold text-gray-500 mb-1 block">Event Date</label>
+                        <input
+                          name="eventDate"
+                          value={formData.eventDate}
+                          required
+                          onChange={handleInputChange}
+                          type="date"
+                          className="w-full bg-white border border-gray-200 rounded px-3 py-2 text-sm outline-none focus:border-brand-gold transition-all text-gray-500"
+                        />
+                      </div>
+                      <div>
+                        <textarea
+                          name="address"
+                          value={formData.address}
+                          required
+                          onChange={handleInputChange}
+                          placeholder="Delivery Address..."
+                          rows="2"
+                          className="w-full bg-white border border-gray-200 rounded px-3 py-2 text-sm outline-none focus:border-brand-gold transition-all resize-none"
+                        ></textarea>
+                      </div>
+                    </div>
                   </div>
 
                   <button
                     type="submit"
-                    className={styles.payBtn}
                     disabled={isSubmitting}
-                    style={{
-                      opacity: isSubmitting ? 0.7 : 1,
-                      cursor: isSubmitting ? "not-allowed" : "pointer",
-                    }}
+                    className="w-full py-4 bg-brand-gold text-white font-bold uppercase tracking-widest hover:bg-brand-dark transition-all rounded-lg flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? (
                       <>
-                        <Loader2 size={18} className="spin-icon" style={{ animation: "spin 1s linear infinite" }} />
-                        Processing...
+                        <Loader2 size={18} className="animate-spin" /> Processing...
                       </>
                     ) : (
                       <>
-                        <ArrowRight size={16} /> Submit Request
+                        Submit Request <ArrowRight size={18} />
                       </>
                     )}
                   </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsCheckingOut(false)}
+                    className="w-full text-xs text-gray-400 hover:text-brand-dark underline"
+                  >
+                    Cancel
+                  </button>
                 </motion.form>
               )}
-            </div>
 
-            <p className={styles.secureText}>
-              <Lock size={12} /> Secure 256-bit SSL Encrypted payment.
-            </p>
+              <div className="mt-6 flex items-center justify-center gap-2 text-gray-400 text-xs">
+                <Lock size={12} />
+                <span>Secure 256-bit SSL Encrypted payment.</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <style>{`
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-      `}</style>
       <Footer />
     </div>
   );
