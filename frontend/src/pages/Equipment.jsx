@@ -1,38 +1,66 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Filter } from "lucide-react";
+import { Filter, Search, CheckCircle } from "lucide-react";
 import Navbar from "../components/layout/TopNav";
 import Footer from "../components/layout/Footer";
 import ProductCard from "../components/cards/ProductCard";
-import { useInventory } from "../context/InventoryContext"; // 1. Import Context
+import { useInventory } from "../context/InventoryContext";
 import styles from "./Equipment.module.css";
 
 const Equipment = () => {
   const location = useLocation();
-  const { products, categories } = useInventory(); // 2. Get Data from Context
+  const { products, categories } = useInventory();
 
   // --- FILTERS STATE ---
   const [selectedCategory, setSelectedCategory] = useState(location.state?.category || "All");
-  const [priceRange, setPriceRange] = useState(200); // Max price
+  const [priceRange, setPriceRange] = useState(500);
+  const [searchTerm, setSearchTerm] = useState("");
   const [showMobileFilter, setShowMobileFilter] = useState(false);
+
+  // NEW FILTERS
+  const [inStockOnly, setInStockOnly] = useState(false);
+  const [sortBy, setSortBy] = useState("featured"); // featured, price-low, price-high, name
 
   // Scroll to top on load
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // --- FILTER LOGIC ---
-  const filteredProducts = products.filter((product) => {
-    // 1. Category Filter
-    const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
+  // --- FILTER & SORT LOGIC ---
+  const filteredProducts = products
+    .filter((product) => {
+      // 1. Category Filter
+      const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
 
-    // 2. Price Filter (Handle backend 'pricePerDay' vs frontend 'price')
-    const currentPrice = product.pricePerDay || product.price || 0;
-    const matchesPrice = currentPrice <= priceRange;
+      // 2. Price Filter
+      const currentPrice = product.pricePerDay || product.price || 0;
+      const matchesPrice = currentPrice <= priceRange;
 
-    return matchesCategory && matchesPrice;
-  });
+      // 3. Search Filter
+      const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+
+      // 4. Availability Filter
+      const matchesStock = inStockOnly ? product.stock && product.stock > 0 : true;
+
+      return matchesCategory && matchesPrice && matchesSearch && matchesStock;
+    })
+    .sort((a, b) => {
+      // 5. Sorting Logic
+      const priceA = a.pricePerDay || a.price || 0;
+      const priceB = b.pricePerDay || b.price || 0;
+
+      switch (sortBy) {
+        case "price-low":
+          return priceA - priceB;
+        case "price-high":
+          return priceB - priceA;
+        case "name":
+          return a.name.localeCompare(b.name);
+        default:
+          return 0; // "featured" keeps default order
+      }
+    });
 
   return (
     <div className={styles.wrapper}>
@@ -49,7 +77,41 @@ const Equipment = () => {
               </button>
             </div>
 
-            {/* Category Filter */}
+            {/* 1. Sort By (NEW) */}
+            <div className={styles.filterGroup}>
+              <h4>Sort By</h4>
+              <div className={styles.radioList}>
+                <label className={styles.radioLabel}>
+                  <input type="radio" name="sort" checked={sortBy === "featured"} onChange={() => setSortBy("featured")} />
+                  <span>Featured</span>
+                </label>
+                <label className={styles.radioLabel}>
+                  <input type="radio" name="sort" checked={sortBy === "price-low"} onChange={() => setSortBy("price-low")} />
+                  <span>Price: Low to High</span>
+                </label>
+                <label className={styles.radioLabel}>
+                  <input type="radio" name="sort" checked={sortBy === "price-high"} onChange={() => setSortBy("price-high")} />
+                  <span>Price: High to Low</span>
+                </label>
+                <label className={styles.radioLabel}>
+                  <input type="radio" name="sort" checked={sortBy === "name"} onChange={() => setSortBy("name")} />
+                  <span>Name (A-Z)</span>
+                </label>
+              </div>
+            </div>
+
+            {/* 2. Availability (NEW) */}
+            <div className={styles.filterGroup}>
+              <h4>Availability</h4>
+              <label className={`${styles.checkboxLabel} ${inStockOnly ? styles.checked : ""}`}>
+                <input type="checkbox" checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} />
+                <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  In Stock Only {inStockOnly && <CheckCircle size={14} color="#4ade80" />}
+                </span>
+              </label>
+            </div>
+
+            {/* 3. Category Filter */}
             <div className={styles.filterGroup}>
               <h4>Category</h4>
               <div className={styles.optionList}>
@@ -71,7 +133,7 @@ const Equipment = () => {
               </div>
             </div>
 
-            {/* Price Filter */}
+            {/* 4. Price Filter */}
             <div className={styles.filterGroup}>
               <div className={styles.rangeHeader}>
                 <h4>Max Price / Day</h4>
@@ -80,7 +142,7 @@ const Equipment = () => {
               <input
                 type="range"
                 min="0"
-                max="500" // Increased max range for pro gear
+                max="500"
                 step="10"
                 value={priceRange}
                 onChange={(e) => setPriceRange(Number(e.target.value))}
@@ -91,28 +153,30 @@ const Equipment = () => {
                 <span>$500+</span>
               </div>
             </div>
-
-            {/* Duration / Battery Filter (Demo) */}
-            <div className={styles.filterGroup}>
-              <h4>Battery Life</h4>
-              <div className={styles.checkboxList}>
-                <label className={styles.checkboxLabel}>
-                  <input type="checkbox" /> <span>8+ Hours</span>
-                </label>
-                <label className={styles.checkboxLabel}>
-                  <input type="checkbox" /> <span>12+ Hours</span>
-                </label>
-              </div>
-            </div>
           </aside>
 
           {/* --- MAIN CONTENT --- */}
           <main className={styles.mainContent}>
-            {/* Header Area */}
+            {/* Header Area with Search */}
             <div className={styles.contentHeader}>
-              <div>
+              <div className={styles.headerTitle}>
                 <h1 className={styles.pageTitle}>{selectedCategory === "All" ? "All Equipment" : selectedCategory}</h1>
-                <p className={styles.resultsCount}>{filteredProducts.length} results found</p>
+                <p className={styles.resultsCount}>
+                  {filteredProducts.length} results found
+                  {inStockOnly && <span style={{ color: "#4ade80", marginLeft: "6px" }}>• In Stock</span>}
+                </p>
+              </div>
+
+              {/* Search Box */}
+              <div className={styles.searchWrapper}>
+                <Search size={18} className={styles.searchIcon} />
+                <input
+                  type="text"
+                  placeholder="Search gear..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={styles.searchInput}
+                />
               </div>
 
               {/* Mobile Filter Toggle */}
@@ -126,7 +190,6 @@ const Equipment = () => {
               <motion.div layout className={styles.grid}>
                 <AnimatePresence>
                   {filteredProducts.map((product) => (
-                    // Use _id from backend, fallback to id
                     <Link to={`/product/${product._id || product.id}`} key={product._id || product.id}>
                       <ProductCard product={product} />
                     </Link>
@@ -135,15 +198,18 @@ const Equipment = () => {
               </motion.div>
             ) : (
               <div className={styles.noResults}>
-                <h3>No gear found</h3>
-                <p>Try adjusting your filters to see more results.</p>
+                <h3>No gear matches your criteria</h3>
+                <p>Try adjusting your filters or search terms.</p>
                 <button
                   onClick={() => {
                     setSelectedCategory("All");
                     setPriceRange(500);
+                    setSearchTerm("");
+                    setInStockOnly(false);
+                    setSortBy("featured");
                   }}
                 >
-                  Clear Filters
+                  Clear All Filters
                 </button>
               </div>
             )}

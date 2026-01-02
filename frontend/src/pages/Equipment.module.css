@@ -225,3 +225,317 @@
     display: block;
   }
 }
+/* ... (Keep existing Wrapper, Layout, Sidebar styles) ... */
+
+.wrapper {
+  background: var(--bg-main);
+  min-height: 100vh;
+  padding-top: 100px;
+}
+
+.layout {
+  display: flex;
+  gap: 40px;
+  position: relative;
+}
+
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 100px;
+  height: calc(100vh - 100px);
+  overflow-y: auto;
+  padding-right: 20px;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ... (Keep Filter Group, Option Btn, Range Input styles) ... */
+
+.filterHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.filterHeader h3 {
+  font-size: 1.1rem;
+  color: white;
+  margin: 0;
+}
+
+.closeBtn {
+  display: none;
+}
+
+.filterGroup {
+  margin-bottom: 32px;
+}
+
+.filterGroup h4 {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+}
+
+.optionList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.optionBtn {
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+}
+
+.optionBtn:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.activeOption {
+  background: var(--accent) !important;
+  color: white;
+  font-weight: 600;
+}
+
+.rangeHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  color: white;
+  font-size: 0.9rem;
+}
+
+.rangeInput {
+  width: 100%;
+  accent-color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.rangeLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* --- MAIN CONTENT & SEARCH --- */
+.mainContent {
+  flex: 1;
+  padding-bottom: 80px;
+}
+
+.contentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap; /* Wraps on small screens */
+  gap: 20px;
+}
+
+.headerTitle {
+  flex-shrink: 0;
+}
+
+.pageTitle {
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 8px;
+}
+
+.resultsCount {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* SEARCH BAR STYLES */
+.searchWrapper {
+  position: relative;
+  flex: 1;
+  max-width: 320px; /* Limits width on desktop */
+}
+
+.searchInput {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 16px 12px 42px; /* Left padding for icon */
+  border-radius: 100px;
+  color: white;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.searchInput:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent);
+}
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+/* ... (Keep existing Grid and Mobile styles) ... */
+
+.mobileFilterBtn {
+  display: none;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.noResults {
+  text-align: center;
+  padding: 80px 0;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text-secondary);
+}
+
+.noResults button {
+  margin-top: 16px;
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: #121212;
+    z-index: 1000;
+    padding: 24px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .mobileShow {
+    transform: translateX(0);
+  }
+
+  .closeBtn {
+    display: block;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    text-decoration: underline;
+  }
+
+  .mobileFilterBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  .layout {
+    display: block;
+  }
+
+  .searchWrapper {
+    max-width: 100%; /* Full width on mobile */
+    order: 3; /* Push below title/filter btn if needed, or adjust */
+    width: 100%;
+  }
+
+  .contentHeader {
+    align-items: flex-start;
+  }
+}
+/* ... (Keep all existing styles) ... */
+
+/* RADIO LIST (For Sort By) */
+.radioList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.radioLabel:hover {
+  color: white;
+}
+
+.radioLabel input[type="radio"] {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* CHECKBOX STYLES (Enhanced) */
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.checkboxLabel:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+.checkboxLabel.checked {
+  background: rgba(74, 222, 128, 0.1); /* Green tint */
+  border-color: rgba(74, 222, 128, 0.3);
+  color: #4ade80;
+}
+
+.checkboxLabel input {
+  accent-color: #4ade80; /* Green check */
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
