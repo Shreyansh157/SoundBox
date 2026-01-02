@@ -25,11 +25,13 @@ const productRoutes = require("./routes/productRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const categoryRoutes = require("./routes/categoryRoutes"); // From previous steps
 const contactRoutes = require("./routes/contactRoutes");
+const bookingRoutes = require("./routes/bookingRoutes");
 
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/bookings", bookingRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 5000;

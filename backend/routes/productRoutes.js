@@ -49,6 +49,7 @@ router.post("/", upload.single("image"), async (req, res) => {
       pricePerDay: req.body.pricePerDay,
       description: req.body.description,
       image: `/uploads/${req.file.filename}`,
+      stock: req.body.stock || 1, // <--- NEW
     });
 
     const newProduct = await product.save();
@@ -61,8 +62,8 @@ router.post("/", upload.single("image"), async (req, res) => {
 // --- 5. PUT Update Product ---
 router.put("/:id", upload.single("image"), async (req, res) => {
   try {
-    const { name, category, pricePerDay, description } = req.body;
-    let updateData = { name, category, pricePerDay, description };
+    const { name, category, pricePerDay, description, stock } = req.body; // <--- NEW
+    let updateData = { name, category, pricePerDay, description, stock };
 
     // If a new file is uploaded, update the image path
     if (req.file) {

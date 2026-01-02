@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Filter, ChevronDown, Check } from "lucide-react";
+import { Filter } from "lucide-react";
 import Navbar from "../components/layout/TopNav";
 import Footer from "../components/layout/Footer";
 import ProductCard from "../components/cards/ProductCard";
-import { PRODUCTS, CATEGORIES } from "../data/data";
+import { useInventory } from "../context/InventoryContext"; // 1. Import Context
 import styles from "./Equipment.module.css";
 
 const Equipment = () => {
   const location = useLocation();
+  const { products, categories } = useInventory(); // 2. Get Data from Context
 
   // --- FILTERS STATE ---
   const [selectedCategory, setSelectedCategory] = useState(location.state?.category || "All");
@@ -22,11 +23,13 @@ const Equipment = () => {
   }, []);
 
   // --- FILTER LOGIC ---
-  const filteredProducts = PRODUCTS.filter((product) => {
+  const filteredProducts = products.filter((product) => {
     // 1. Category Filter
     const matchesCategory = selectedCategory === "All" || product.category === selectedCategory;
-    // 2. Price Filter
-    const matchesPrice = product.price <= priceRange;
+
+    // 2. Price Filter (Handle backend 'pricePerDay' vs frontend 'price')
+    const currentPrice = product.pricePerDay || product.price || 0;
+    const matchesPrice = currentPrice <= priceRange;
 
     return matchesCategory && matchesPrice;
   });
@@ -56,9 +59,9 @@ const Equipment = () => {
                 >
                   All Equipment
                 </button>
-                {CATEGORIES.map((cat) => (
+                {categories.map((cat) => (
                   <button
-                    key={cat.id}
+                    key={cat._id || cat.id}
                     className={`${styles.optionBtn} ${selectedCategory === cat.name ? styles.activeOption : ""}`}
                     onClick={() => setSelectedCategory(cat.name)}
                   >
@@ -77,15 +80,15 @@ const Equipment = () => {
               <input
                 type="range"
                 min="0"
-                max="200"
-                step="5"
+                max="500" // Increased max range for pro gear
+                step="10"
                 value={priceRange}
                 onChange={(e) => setPriceRange(Number(e.target.value))}
                 className={styles.rangeInput}
               />
               <div className={styles.rangeLabels}>
                 <span>$0</span>
-                <span>$200+</span>
+                <span>$500+</span>
               </div>
             </div>
 
@@ -123,7 +126,8 @@ const Equipment = () => {
               <motion.div layout className={styles.grid}>
                 <AnimatePresence>
                   {filteredProducts.map((product) => (
-                    <Link to={`/product/${product.id}`} key={product.id}>
+                    // Use _id from backend, fallback to id
+                    <Link to={`/product/${product._id || product.id}`} key={product._id || product.id}>
                       <ProductCard product={product} />
                     </Link>
                   ))}
@@ -136,7 +140,7 @@ const Equipment = () => {
                 <button
                   onClick={() => {
                     setSelectedCategory("All");
-                    setPriceRange(200);
+                    setPriceRange(500);
                   }}
                 >
                   Clear Filters

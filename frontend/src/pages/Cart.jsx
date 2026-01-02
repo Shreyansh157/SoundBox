@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trash2, ArrowRight, ShoppingBag, Lock, Calendar, Clock, Loader2, Minus, Plus } from "lucide-react"; // Added Minus, Plus
+import { Trash2, ArrowRight, ShoppingBag, Lock, Calendar, Clock, Loader2, Plus, Minus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/layout/TopNav";
@@ -10,7 +10,6 @@ import styles from "./Cart.module.css";
 
 const Cart = () => {
   const navigate = useNavigate();
-  // Import new functions
   const { cart, removeFromCart, increaseQuantity, decreaseQuantity } = useCart();
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -31,6 +30,7 @@ const Cart = () => {
   const handleSubmitOrder = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
+
     setIsSubmitting(true);
 
     try {
@@ -55,6 +55,7 @@ const Cart = () => {
     }
   };
 
+  // --- CALCULATIONS ---
   const subtotal = cart.reduce((total, item) => {
     const duration = item.days || 1;
     const price = item.pricePerDay || item.price || 0;
@@ -91,64 +92,85 @@ const Cart = () => {
         <div className={styles.grid}>
           {/* LEFT COLUMN: CART ITEMS */}
           <div className={styles.itemsColumn}>
+            {/* Updated Grid Header */}
             <div className={styles.itemsHeader}>
               <span>Product</span>
               <span>Rate / Duration</span>
-              <span>Qty</span>
+              <span style={{ textAlign: "center" }}>Qty</span>
               <span>Total</span>
+              <span></span> {/* Remove Column */}
             </div>
 
             <AnimatePresence>
-              {cart.map((item) => (
-                <motion.div
-                  key={item._id || item.id}
-                  layout
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className={styles.cartItem}
-                >
-                  <div className={styles.itemInfo}>
-                    <img src={item.image && item.image.startsWith("http") ? item.image : `http://localhost:5000${item.image}`} alt={item.name} />
-                    <div>
-                      <h3>{item.name}</h3>
-                      <div className={styles.metaRow}>
-                        {item.startDate && (
-                          <span className={styles.dateBadge}>
-                            <Calendar size={10} /> {item.startDate}
-                          </span>
-                        )}
+              {cart.map((item) => {
+                const itemId = item._id || item.id;
+
+                return (
+                  <motion.div
+                    key={itemId}
+                    layout
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className={styles.cartItem}
+                  >
+                    {/* 1. Product Info */}
+                    <div className={styles.itemInfo}>
+                      <img src={item.image && item.image.startsWith("http") ? item.image : `http://localhost:5000${item.image}`} alt={item.name} />
+                      <div>
+                        <h3>{item.name}</h3>
+                        <div className={styles.metaRow}>
+                          {item.startDate && (
+                            <span className={styles.dateBadge}>
+                              <Calendar size={10} /> {item.startDate}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className={styles.rateColumn}>
-                    <div className={styles.basePrice}>${item.pricePerDay || item.price} / day</div>
-                    <div className={styles.durationBadge}>
-                      <Clock size={12} /> {item.days || 1} Days
+                    {/* 2. Rate */}
+                    <div className={styles.rateColumn}>
+                      <div className={styles.basePrice}>${item.pricePerDay || item.price} / day</div>
+                      <div className={styles.durationBadge}>
+                        <Clock size={12} /> {item.days || 1} Days
+                      </div>
                     </div>
-                  </div>
 
-                  {/* --- MODIFIED QUANTITY SECTION --- */}
-                  <div className={styles.quantityControl}>
-                    <button onClick={() => decreaseQuantity(item.id)} className={styles.qtyBtn} disabled={item.quantity <= 1}>
-                      <Minus size={14} />
-                    </button>
+                    {/* 3. Quantity Control */}
+                    <div className={styles.quantityControl}>
+                      <button
+                        onClick={() => {
+                          if (item.quantity === 1) {
+                            removeFromCart(itemId);
+                          } else {
+                            decreaseQuantity(itemId);
+                          }
+                        }}
+                        className={styles.qtyBtn}
+                      >
+                        <Minus size={14} />
+                      </button>
 
-                    <span className={styles.qtyDisplay}>{item.quantity}</span>
+                      <span className={styles.qtyDisplay}>{item.quantity}</span>
 
-                    <button onClick={() => increaseQuantity(item.id)} className={styles.qtyBtn}>
-                      <Plus size={14} />
-                    </button>
+                      <button onClick={() => increaseQuantity(itemId)} className={styles.qtyBtn}>
+                        <Plus size={14} />
+                      </button>
+                    </div>
 
-                    <button onClick={() => removeFromCart(item.id)} className={styles.removeBtn} title="Remove Item">
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
+                    {/* 4. Total */}
+                    <div className={styles.itemTotal}>${((item.pricePerDay || item.price) * item.quantity * (item.days || 1)).toFixed(2)}</div>
 
-                  <div className={styles.itemTotal}>${((item.pricePerDay || item.price) * item.quantity * (item.days || 1)).toFixed(2)}</div>
-                </motion.div>
-              ))}
+                    {/* 5. Remove Button */}
+                    <div className={styles.removeColumn}>
+                      <button onClick={() => removeFromCart(itemId)} className={styles.removeBtn} title="Remove">
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </AnimatePresence>
           </div>
 
@@ -228,11 +250,15 @@ const Cart = () => {
                     type="submit"
                     className={styles.payBtn}
                     disabled={isSubmitting}
-                    style={{ opacity: isSubmitting ? 0.7 : 1, cursor: isSubmitting ? "not-allowed" : "pointer" }}
+                    style={{
+                      opacity: isSubmitting ? 0.7 : 1,
+                      cursor: isSubmitting ? "not-allowed" : "pointer",
+                    }}
                   >
                     {isSubmitting ? (
                       <>
-                        <Loader2 size={18} style={{ animation: "spin 1s linear infinite" }} /> Processing...
+                        <Loader2 size={18} className="spin-icon" style={{ animation: "spin 1s linear infinite" }} />
+                        Processing...
                       </>
                     ) : (
                       <>
@@ -243,13 +269,17 @@ const Cart = () => {
                 </motion.form>
               )}
             </div>
+
             <p className={styles.secureText}>
               <Lock size={12} /> Secure 256-bit SSL Encrypted payment.
             </p>
           </div>
         </div>
       </div>
-      <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+
+      <style>{`
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      `}</style>
       <Footer />
     </div>
   );
