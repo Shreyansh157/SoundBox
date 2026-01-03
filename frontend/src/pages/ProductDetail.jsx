@@ -87,7 +87,7 @@ const ProductDetail = () => {
       <Navbar />
 
       {/* ADJUSTED: Removed the 'h-32' spacer and used padding on container instead for exact spacing */}
-      <div className="container mx-auto px-6 pb-24 flex-1 pt-24">
+      <div className="mx-auto px-6 pb-24 flex-1 pt-24 ">
         {/* Breadcrumb / Back */}
         <div className="mb-8">
           <button

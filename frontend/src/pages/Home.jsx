@@ -86,11 +86,11 @@ const Home = () => {
                   Explore Solutions
                 </button>
               </Link>
-              <Link to="/equipment">
+              {/* <Link to="/equipment">
                 <button className="px-8 py-4 border border-white text-white font-bold uppercase tracking-widest hover:bg-white hover:text-brand-dark transition-all duration-300 rounded-sm min-w-[200px]">
                   View Catalog
                 </button>
-              </Link>
+              </Link> */}
             </div>
           </motion.div>
         </div>
@@ -100,7 +100,7 @@ const Home = () => {
       </section>
 
       {/* --- STATS SECTION --- */}
-      <section className="py-16 -mt-16 relative z-20">
+      <section className="py-16 mt-16 relative z-20">
         <div className="container mx-auto px-6">
           <div className="bg-white p-12 rounded-xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-8 md:gap-0 divide-y md:divide-y-0 md:divide-x divide-gray-100">
             <div className="flex-1 text-center px-4">
@@ -127,9 +127,9 @@ const Home = () => {
       {/* --- CLIENTS MARQUEE --- */}
       <section className="py-12 overflow-hidden bg-brand-gray">
         <div className="container mx-auto px-6 mb-8 text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">Trusted by industry leaders</p>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-16">Trusted by industry leaders</p>
         </div>
-        <div className="relative flex w-full overflow-hidden">
+        <div className="relative flex w-full overflow-hidden mb-12">
           <div className="animate-marquee whitespace-nowrap flex items-center gap-16 px-8">
             {[...CLIENTS, ...CLIENTS, ...CLIENTS].map((client, index) => (
               <div
@@ -151,8 +151,8 @@ const Home = () => {
       <section className="py-24 bg-white">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 border-b border-gray-100 pb-6">
-            <div>
-              <span className="text-brand-gold font-bold uppercase tracking-widest text-sm">Inventory</span>
+            <div className="text-start">
+              <span className="text-brand-gold font-bold uppercase tracking-widest text-sm border-b-2 border-brand-gold pb-1">Inventory</span>
               <h2 className="text-4xl md:text-5xl font-serif font-bold text-brand-dark mt-2">Our Solutions</h2>
             </div>
             <Link
@@ -180,7 +180,7 @@ const Home = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90"></div>
 
                   <div className="absolute bottom-0 left-0 p-8 w-full text-white">
-                    <IconComponent className="mb-4 text-brand-gold" size={32} />
+                    {/* <IconComponent className="mb-4 text-brand-gold" size={32} /> */}
                     <h3 className="text-2xl font-serif font-bold mb-2">{cat.name}</h3>
                     <p className="text-sm text-gray-300 line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       {cat.description}
@@ -197,8 +197,8 @@ const Home = () => {
       <section className="py-24 bg-brand-gray">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-16 border-b border-gray-200 pb-6">
-            <div>
-              <span className="text-brand-gold font-bold uppercase tracking-widest text-sm">Catalog</span>
+            <div className="text-start">
+              <span className="text-brand-gold font-bold uppercase tracking-widest text-sm border-b-2 border-brand-gold pb-1">Catalog</span>
               <h2 className="text-4xl md:text-5xl font-serif font-bold text-brand-dark mt-2">Trending Gear</h2>
             </div>
             <Link
@@ -212,7 +212,7 @@ const Home = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {products.slice(0, 4).map((prod) => (
               <Link to={`/product/${prod._id}`} key={prod._id} className="block group">
-                <div className="bg-white rounded-lg p-2 shadow-sm hover:shadow-xl transition-all duration-300 h-full">
+                <div className=" rounded-lg transition-all duration-300 h-full">
                   <ProductCard product={prod} />
                 </div>
               </Link>
@@ -236,7 +236,7 @@ const Home = () => {
           </div>
 
           <div className="max-w-4xl mx-auto">
-            <div className="relative bg-white/5 border border-white/10 rounded-2xl p-10 md:p-16 backdrop-blur-sm min-h-[300px] flex items-center justify-center">
+            <div className="relative bg-white/5 border border-white/10 rounded-2xl p-10 md:p-16 md:px-24 backdrop-blur-sm min-h-[300px] flex items-center justify-center">
               {/* Carousel Content */}
               <AnimatePresence mode="wait">
                 <motion.div

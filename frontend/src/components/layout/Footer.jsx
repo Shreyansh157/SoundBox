@@ -26,7 +26,7 @@ const Footer = () => {
 
         {/* Links Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-          <div>
+          <div className="flex flex-col items-center align-center ">
             <h3 className="text-xl font-serif font-bold uppercase tracking-widest mb-6">Raagadjaudio.</h3>
             <p className="text-gray-500 text-sm leading-relaxed mb-6">
               The city's premier audio rental house. We amplify human connection through precision sound.

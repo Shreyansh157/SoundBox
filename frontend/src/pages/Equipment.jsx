@@ -243,7 +243,7 @@ const Equipment = () => {
                   {filteredProducts.map((product) => (
                     <Link to={`/product/${product._id || product.id}`} key={product._id || product.id} className="block h-full">
                       {/* Wrapper to ensure height consistency */}
-                      <div className="h-full bg-white rounded-2xl p-2 shadow-sm hover:shadow-xl transition-all duration-300 border border-transparent hover:border-gray-100">
+                      <div className="h-full rounded-2xl p-2 transition-all duration-300">
                         <ProductCard product={product} />
                       </div>
                     </Link>

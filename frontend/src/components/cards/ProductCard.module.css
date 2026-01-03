@@ -68,6 +68,7 @@
 .price {
   font-size: 1rem;
   color: var(--text-secondary);
+  text-align: left;
 }
 
 .addBtn {

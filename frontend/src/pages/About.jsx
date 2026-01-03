@@ -92,7 +92,7 @@ const About = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.2 }}
-                className="group p-8 rounded-2xl border border-gray-100 bg-brand-gray hover:bg-white hover:shadow-xl transition-all duration-300"
+                className="flex flex-col items-center justify-center group p-8 rounded-2xl border border-gray-100 bg-brand-gray hover:bg-white hover:shadow-xl transition-all duration-300"
               >
                 <div className="w-14 h-14 bg-brand-dark text-brand-gold rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                   <item.icon size={28} />
