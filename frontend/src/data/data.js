@@ -144,11 +144,15 @@ export const TIMELINE = [
 
 export const CLIENTS = [
   { id: 1, name: "Spotify", logo: "https://upload.wikimedia.org/wikipedia/commons/2/26/Spotify_logo_with_text.svg" },
-  { id: 2, name: "Red Bull", logo: "https://upload.wikimedia.org/wikipedia/en/f/f5/RedBullEnergyDrink.svg" },
-  { id: 3, name: "TedX", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a8/TEDx_logo.svg" },
-  { id: 4, name: "Live Nation", logo: "https://upload.wikimedia.org/wikipedia/commons/8/86/Live_Nation_Entertainment_logo.svg" },
-  { id: 5, name: "Sony Music", logo: "https://upload.wikimedia.org/wikipedia/commons/c/c1/Sony_Music_logo.svg" },
-  { id: 6, name: "Boiler Room", logo: "https://upload.wikimedia.org/wikipedia/commons/b/b3/Boiler_Room_logo.png" },
+  { id: 2, name: "Coca Cola", logo: "https://upload.wikimedia.org/wikipedia/commons/c/ce/Coca-Cola_logo.svg" },
+  { id: 3, name: "Youtube", logo: "https://upload.wikimedia.org/wikipedia/commons/e/e1/Logo_of_YouTube_%282015-2017%29.svg" },
+  { id: 4, name: "Samsung", logo: "https://upload.wikimedia.org/wikipedia/commons/b/b7/Samsung_Black_icon.svg" },
+  { id: 5, name: "Sony Music", logo: "https://upload.wikimedia.org/wikipedia/commons/c/ca/Sony_logo.svg" },
+  { id: 6, name: "Google", logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" },
+  { id: 7, name: "Jio Saavn", logo: "https://upload.wikimedia.org/wikipedia/commons/e/ed/JioSaavn_Logo.svg" },
+  { id: 8, name: "Warner Music Group", logo: "https://upload.wikimedia.org/wikipedia/commons/d/d8/Warner_Music_Group_logo_%282021%29.svg" },
+  { id: 9, name: "Universal Music Group", logo: "https://upload.wikimedia.org/wikipedia/commons/b/b6/Universal_Pictures_logo.svg" },
+  { id: 10, name: "Netflix", logo: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" },
 ];
 // ... existing imports and exports ...
 

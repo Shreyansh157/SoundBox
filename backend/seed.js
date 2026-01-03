@@ -116,7 +116,7 @@ const sampleProducts = [
     category: "Microphones",
     pricePerDay: 45,
     description: "Industry-standard vocal microphone now with digital wireless freedom. Includes receiver and handheld transmitter.",
-    image: "https://images.unsplash.com/photo-1623838423652-32b719416556?q=80&w=800",
+    image: "https://blocks.astratic.com/img/general-img-landscape.png",
     isAvailable: true,
   },
   {
@@ -124,7 +124,7 @@ const sampleProducts = [
     category: "Microphones",
     pricePerDay: 30,
     description: "Large-diaphragm condenser microphone known for its warmth, clarity, and incredibly low self-noise.",
-    image: "https://images.unsplash.com/photo-1549411984-7e5d8000966f?q=80&w=800",
+    image: "https://blocks.astratic.com/img/general-img-landscape.png",
     isAvailable: true,
   },
   {
@@ -142,7 +142,7 @@ const sampleProducts = [
     category: "DJ Gear",
     pricePerDay: 120,
     description: "The DDJ-1000 offers the ideal solution if you want to play at bigger events and party venues.",
-    image: "https://images.unsplash.com/photo-1571175443880-49e1d58b727d?q=80&w=800",
+    image: "https://blocks.astratic.com/img/general-img-landscape.png",
     isAvailable: true,
   },
   {
@@ -158,7 +158,7 @@ const sampleProducts = [
     category: "DJ Gear",
     pricePerDay: 40,
     description: "2-Deck DJ Controller with FX Paddles and 6-Inch Jog Wheels. Perfect for beginners and mobile DJs.",
-    image: "https://images.unsplash.com/photo-1461784568600-47432b0dd8d1?q=80&w=800",
+    image: "https://blocks.astratic.com/img/general-img-landscape.png",
     isAvailable: true,
   },
   {
@@ -192,7 +192,7 @@ const sampleProducts = [
     category: "Lighting",
     pricePerDay: 65,
     description: "Compact bright LED profile moving head with efficient optics and punchy output.",
-    image: "https://images.unsplash.com/photo-1533174072545-e8d4aa97edf9?q=80&w=800",
+    image: "https://blocks.astratic.com/img/general-img-landscape.png",
     isAvailable: true,
   },
   {
@@ -208,7 +208,7 @@ const sampleProducts = [
     category: "Lighting",
     pricePerDay: 80,
     description: "Full color RGB laser system, ideal for clubs, mobile DJs, and private events.",
-    image: "https://images.unsplash.com/photo-1504825852554-7933907ebc38?q=80&w=800",
+    image: "https://blocks.astratic.com/img/general-img-landscape.png",
     isAvailable: true,
   },
 ];

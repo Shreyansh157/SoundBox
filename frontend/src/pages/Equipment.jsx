@@ -69,12 +69,12 @@ const Equipment = () => {
       {/* This invisible block physically pushes content down below the fixed navbar */}
       <div className="w-full h-32 flex-shrink-0"></div>
 
-      <div className="container mx-auto px-6 pb-20 flex-1">
+      <div className="container? mx-auto px-16 pb-20 flex-1">
         <div className="flex flex-col lg:flex-row gap-12">
           {/* --- LEFT SIDEBAR (Desktop Sticky / Mobile Modal) --- */}
           <aside
             className={`
-              fixed inset-0 z-50 bg-white p-6 transition-transform duration-300 lg:translate-x-0 lg:static lg:bg-transparent lg:p-0 lg:w-72 lg:block lg:flex-shrink-0
+              fixed inset-0 z-50 md:z-40 bg-white p-6 transition-transform duration-300 lg:translate-x-0 lg:static lg:bg-transparent lg:p-0 lg:w-72 lg:block lg:flex-shrink-0
               ${showMobileFilter ? "translate-x-0" : "-translate-x-full"}
             `}
           >
@@ -238,7 +238,7 @@ const Equipment = () => {
 
             {/* Product Grid */}
             {filteredProducts.length > 0 ? (
-              <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
+              <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 text-start">
                 <AnimatePresence>
                   {filteredProducts.map((product) => (
                     <Link to={`/product/${product._id || product.id}`} key={product._id || product.id} className="block h-full">

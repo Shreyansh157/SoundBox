@@ -127,7 +127,7 @@ const Home = () => {
       {/* --- CLIENTS MARQUEE --- */}
       <section className="py-12 overflow-hidden bg-brand-gray">
         <div className="container mx-auto px-6 mb-8 text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-16">Trusted by industry leaders</p>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-12">Trusted by industry leaders</p>
         </div>
         <div className="relative flex w-full overflow-hidden mb-12">
           <div className="animate-marquee whitespace-nowrap flex items-center gap-16 px-8">

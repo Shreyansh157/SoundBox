@@ -27,7 +27,7 @@ const Admin = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (username === "admin" && password === "soundbox123") {
+    if (username === "admin" && password === "admin") {
       setIsAuthenticated(true);
       localStorage.setItem("sb_admin_auth", "true");
       setLoginError("");
@@ -193,11 +193,11 @@ const Admin = () => {
             <form onSubmit={handleLogin} className={styles.form}>
               <div className={styles.group}>
                 <label>Admin ID</label>
-                <input type="text" autoFocus value={username} onChange={(e) => setUsername(e.target.value)} placeholder="admin" />
+                <input type="text" autoFocus value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Enter Username" />
               </div>
               <div className={styles.group}>
                 <label>Password</label>
-                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" />
+                <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter Password" />
               </div>
               {loginError && <div className={styles.errorMsg}>{loginError}</div>}
               <button type="submit" className={styles.submitBtn}>

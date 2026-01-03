@@ -88,7 +88,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/careers" className="hover:text-brand-gold">
-                  Careers
+                  About Us
                 </Link>
               </li>
               <li>
