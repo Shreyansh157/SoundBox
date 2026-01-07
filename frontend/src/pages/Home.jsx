@@ -82,8 +82,8 @@ const Home = () => {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/equipment">
-                <button className="px-8 py-4 bg-brand-gold text-white font-bold uppercase tracking-widest hover:bg-white hover:text-brand-dark transition-all duration-300 rounded-sm min-w-[200px]">
-                  Explore Solutions
+                <button className="px-8 py-4 bg-brand-gold text-white font-bold uppercase tracking-widest hover:bg-white hover:text-brand-dark transition-all duration-300 rounded-sm min-w-[150px]">
+                  Rent Now
                 </button>
               </Link>
               {/* <Link to="/equipment">

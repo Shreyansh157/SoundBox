@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, Star, ShieldCheck, Truck, ShoppingBag, Check, Calendar, Clock } from "lucide-react";
+import { ArrowLeft, ArrowRight, Star, ShieldCheck, Truck, ShoppingBag, Check, Calendar, Clock } from "lucide-react";
 import axios from "axios";
 import Navbar from "../components/layout/TopNav";
 import Footer from "../components/layout/Footer";
+import ProductCard from "../components/cards/ProductCard";
 import { useCart } from "../context/CartContext";
+import { useInventory } from "../context/InventoryContext";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
+  const { products: allProducts } = useInventory();
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -81,6 +84,28 @@ const ProductDetail = () => {
   };
 
   const imageSrc = product.image && product.image.startsWith("http") ? product.image : `http://localhost:5000${product.image}`;
+
+  // --- Add this Logic Section ---
+
+  // 1. Calculate End Date Helper
+  const getFormattedDate = (dateStr) => {
+    if (!dateStr) return "-";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", weekday: "short" });
+  };
+
+  const getEndDate = () => {
+    if (!startDate) return "-";
+    const date = new Date(startDate);
+    date.setDate(date.getDate() + days);
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", weekday: "short" });
+  };
+
+  // 2. Filter Similar Products (Requires 'allProducts' from useInventory hook)
+  // Make sure you have: const { products: allProducts } = useInventory(); at the top
+  const similarProducts = allProducts
+    ? allProducts.filter((p) => p.category === product.category && (p._id || p.id) !== (product._id || product.id)).slice(0, 4)
+    : [];
 
   return (
     <div className="font-sans antialiased bg-brand-gray min-h-screen flex flex-col selection:bg-brand-gold selection:text-white">
@@ -185,8 +210,22 @@ const ProductDetail = () => {
                   </div>
                 </div>
 
-                {/* HIDDEN: Calculation Summary as requested */}
-                {/* <div className="flex justify-between items-center py-4 border-t ..."> ... </div> */}
+                {/* --- RENTAL PERIOD SUMMARY (Tailwind) --- */}
+                {startDate && (
+                  <div className="mt-2 mb-6 p-4 rounded-lg bg-gray-50 border border-gray-200 ">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs uppercase tracking-wider text-[var(--text-muted)] font-semibold">Rental Period</span>
+                      <div className="flex items-center justify-center gap-3 text-neutral-700 font-medium">
+                        <span>{getFormattedDate(startDate)}</span>
+                        <ArrowRight size={14} />
+                        <span>{getEndDate()}</span>
+                      </div>
+                    </div>
+                    {/* <div className="text-right">
+                      <span className="inline-block px-2 py-1 rounded bg-[rgba(59,130,246,0.2)]  text-xs font-bold">{days} Day Rental</span>
+                    </div> */}
+                  </div>
+                )}
 
                 {/* Actions */}
                 <div className="space-y-3">
@@ -240,6 +279,27 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
+      {/* --- NEW: Similar Products Section (White Theme) --- */}
+      {similarProducts.length > 0 && (
+        <div className="w-full bg-white py-20">
+          <div className="container? mx-auto px-6">
+            <h2 className="text-3xl font-bold text-gray-900 mb-10 text-center">You might also like</h2>
+
+            {/* Grid for Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {similarProducts.map((item) => (
+                <Link
+                  key={item._id || item.id}
+                  to={`/product/${item._id || item.id}`}
+                  style={{ textDecoration: "none" }} // Prevent link underline
+                >
+                  <ProductCard product={item} />
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
